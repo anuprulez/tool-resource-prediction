@@ -1,2 +1,1 @@
-# tool-resource-prediction
-Tool Resource Prediction for Genomic Datasets
+# Tool Resource Prediction for Genomic Datasets
