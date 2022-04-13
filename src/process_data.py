@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+
 # This method is used to process the original raw dataset
 # It filters all jobs without file size or number of files and removes the columns job_id, state & create_time
 # The processed data (new_data) has form tool_id, filesize, num_files, runtime_seconds, slots, memory_bytes
@@ -15,8 +16,8 @@ def process_dataset(filename: str, number_rows: int, save_data: bool):
         dict_tools = {}
         for row in original_data:
             stripped = [column.strip() for column in row]
-            # We skip rows with no file size or number of files
-            if stripped[1] != "" and stripped[2] != "":
+            # We skip rows with no file size, number of files or memory_bytes
+            if stripped[1] != "" and stripped[2] != "" and stripped[5] != "":
                 tool_name = stripped[0]
                 # TODO: maybe add option to make distinction between different versions of tools
                 # Find latest occurrence of '/' to remove the version of the tool
@@ -62,7 +63,7 @@ def process_dataset(filename: str, number_rows: int, save_data: bool):
             #         f.write("%s, %s\n" % (entry[0], entry[1]))
 
             # Write all entries to a file
-            with open('saved_data/all_entries.txt', 'a+') as f:
+            with open('../processed_data/dataset_stripped.txt', 'a+') as f:
                 for entry in new_data:
                     for idx, data_feature in enumerate(entry):
                         if idx != (len(entry) - 1):
@@ -101,7 +102,7 @@ def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool):
 
     if save:
         # Write list of most used tools into a file
-        with open('saved_data/most_used_tools.txt', 'a') as f:
+        with open('../processed_data/most_used_tools.txt', 'a') as f:
             for entry in list_tools_number_entries:
                 f.write("%s, %s\n" % (entry[0], entry[1]))
 
@@ -114,7 +115,7 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
     # Dictionary: toolname_without_version --> toolname_without_version, filesize, num_files and memory_bytes
     dict_tools = {}
 
-    for i in range(10):
+    for i in range(5):
         # we extract only tool_id, filesize, num_files and memory_bytes
         data = np.loadtxt(filename_dataset, delimiter=',', skiprows=i * rows_per_chunk, dtype=str,
                           max_rows=rows_per_chunk, usecols=(0, 1, 2, 5))
@@ -135,7 +136,8 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
 
     if sample_data:
         sampled_data_dict = {}
-        filename_str = 'saved_data/sampled_data_top_' + str(number_tools) + '_tools.txt'
+        filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_top_' + str(number_tools) + \
+                       '_tools_seed_' + str(rndm_seed) + '.txt'
         for tool in dict_tools:
             random.seed(rndm_seed)
             sampled_data_dict[tool] = random.sample(dict_tools[tool], number_samples_per_tool)
