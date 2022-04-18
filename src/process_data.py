@@ -109,17 +109,24 @@ def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool):
 
 # This method extracts only the rows from the dataset that are given in the list of tools
 def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, number_tools: int, rows_per_chunk: int,
-                              rndm_seed=0, sample_data=False, number_samples_per_tool=100):
-    set_of_tools = set(np.loadtxt(filename_list_of_tools, delimiter=',', dtype=str, usecols=0, max_rows=number_tools))
+                              rndm_seed=0, sample_data=False, number_samples_per_tool=100,
+                              distinction_between_versions: bool = False, specific_tool_number=None):
+    tool_data = np.loadtxt(filename_list_of_tools, delimiter=',', dtype=str, max_rows=number_tools).reshape((-1, 2))
+    if specific_tool_number is None:
+        set_of_tools = set(tool_data[:, 0])
+    else:
+        set_of_tools = set([tool_data[specific_tool_number, 0]])
 
     # Dictionary: toolname_without_version --> toolname_without_version, filesize, num_files and memory_bytes
     dict_tools = {}
 
     for i in range(5):
-        # we extract only tool_id, filesize, num_files and memory_bytes
+        # we extract tool_id, filesize, num_files, runtime_seconds, slots and memory_bytes
         data = np.loadtxt(filename_dataset, delimiter=',', skiprows=i * rows_per_chunk, dtype=str,
-                          max_rows=rows_per_chunk, usecols=(0, 1, 2, 5))
+                          max_rows=rows_per_chunk, usecols=(0, 1, 2, 3, 4, 5))
         for entry in data:
+            if entry[1] == '0':
+                continue
             tool_name = entry[0]
             # Find latest occurrence of '/' to remove the version of the tool
             idx = tool_name.rfind('/')
@@ -130,14 +137,24 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
             # We only consider entries which are in the set of tools
             if tool_name_without_version in set_of_tools:
                 if tool_name_without_version in dict_tools:
-                    dict_tools[tool_name_without_version].append(entry)
+                    if distinction_between_versions:
+                        dict_tools[tool_name].append(entry)
+                    else:
+                        dict_tools[tool_name_without_version].append(entry)
                 else:
-                    dict_tools[tool_name_without_version] = [entry]
+                    if distinction_between_versions:
+                        dict_tools[tool_name] = [entry]
+                    else:
+                        dict_tools[tool_name_without_version] = [entry]
 
     if sample_data:
         sampled_data_dict = {}
-        filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_top_' + str(number_tools) + \
-                       '_tools_seed_' + str(rndm_seed) + '.txt'
+        if specific_tool_number is None:
+            filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_top_' + str(number_tools) + \
+                           '_tools_seed_' + str(rndm_seed) + '.txt'
+        else:
+            filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_tool_number_' +\
+                           str(specific_tool_number) + '_seed_' + str(rndm_seed) + '.txt'
         for tool in dict_tools:
             random.seed(rndm_seed)
             sampled_data_dict[tool] = random.sample(dict_tools[tool], number_samples_per_tool)
