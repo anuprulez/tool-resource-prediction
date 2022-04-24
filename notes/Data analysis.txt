@@ -1,0 +1,32 @@
+First: remove entries with no filesize, number of files or memory_bytes
+oringally 33432632 jobs, after only 24638442 left
+
+ 
+--> find out which tools get used the most
+complete dataset: 2449 tools (no distinction between versions)
+
+
+All tools	Top 1000	Top 100		Top 50
+24638442	24561549	22608953	20881600
+			0,996879145	0,917629167	0,847521122
+			
+--> take top 100 used tools since they make up about 91% of all used tools
+
+
+--> randomly sample 150 entries for each of the top 100 tools of the dataset
+
+find out which tools have different versions and analyze them
+
+
+Should I look out that the number of datapoints per tool is not too high for certain tools? Should I cap it?
+Maybe cap them at 100 entries per Tool?
+
+---------------------------------------
+
+Training:
+
+- For RFR: 
+	- "Empirical good default values are max_features=None".
+		- "max_features is the size of the random subsets of features to consider when splitting a node.
+		  The lower the greater the reduction of variance, but also the greater the increase in bias"
+	- Good results are often achieved when setting max_depth=None in combination with min_samples_split=2 (i.e., when fully developing the trees)

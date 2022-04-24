@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # process_dataset('../Galaxy1-[galaxy_tool_resources_2y.csv].txt', 1000000, args.save)
-    # find_most_used_tools("../processed_data/dataset_stripped.txt", 1000000, args.save)
+    process_dataset('../Galaxy1-[galaxy_tool_resources_2y.csv].txt', 1000000, args.save)
+    # find_most_used_tools("../processed_data/dataset_stripped.txt", 1000000, args.save, distinction_between_tools=True)
 
     # extract_entries_from_data("../processed_data/dataset_stripped.txt",
     #                           "../processed_data/most_used_tools.txt",
@@ -29,8 +29,8 @@ if __name__ == '__main__':
     #                           rows_per_chunk=1000000,
     #                           rndm_seed=100,
     #                           sample_data=True,
-    #                           number_samples_per_tool=5000,
+    #                           number_samples_per_tool=20000,
     #                           distinction_between_versions=False,
-    #                           specific_tool_number=18)
+    #                           specific_tool_number=0)
 
-    estimator.train_and_predict(do_scaling=True)
+    y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True)

@@ -1,0 +1,61 @@
+Tool Resource Prediction for Genomic Datasets
+
+TODO:
+
+- Some entries in the data have filesize 0 but number of files more than 0: --> leave them out
+- what is the ground truth avg. for the memory used for a specific tool?
+- try out some Preproccesors, they help to improve
+
+DONE:
+- ONLY USE SAME VERSION FOR TOOLS!
+	- make distinction between versions
+- include create_time
+
+- leave out "Runtime"
+- XGB: extra gradient boosting
+- try other models:
+	- simple models Linear Regressor or SVR
+	- Ensemble based or tree based methods
+	- e.g. Gradient boosting
+	- see on the bottom
+- data analysis: for most used tool: generate a graph filesize -> memory
+	- also look if there are differences of the data for different time periods (2020, 2021, 2022)
+	- memory usage vs time plot
+- try more samples. Already generated file with 20000 samples
+- start with a single tool or top 5 
+- use all features and do feature selection (maybe runtime not important because we dont know it beforehand)
+- in future: find out if tool_id is important for prediction
+- in future: is it possible to predict runteim?
+
+Questions:
+- how precise do we want to predict the memory? KB, MB or GB?
+- Categorical data: how should I encode the tool name?
+- question for later on: for the prediction, do we want to use multiple models for different tools or one model for all tools?
+
+Infos:
+- Random forest learns feature importance dependent on the output
+- write report 20-30 pages
+- bw cloud: https://portal.bw-cloud.org/
+- Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
+- Chat: https://app.element.io/#/welcome
+	- @anupkumar:matrix.org
+
+group tools that have different version or make a distinction between them?
+Is there a big variance between versions for a specific tool? Do an analysis on that and find out
+
+papers:
+https://ris.uni-paderborn.de/download/16219/16220/ris_preprint.pdf
+https://link.springer.com/content/pdf/10.1007/s10723-021-09561-3.pdf
+https://upcommons.upc.edu/bitstream/handle/2117/106670/128908.pdf
+				
+
+Possible methods:
+	- Linear Regression
+	- Support Vector Regression (better regularization than Linear Regression)
+	- Decision Trees
+	- Ensemble Learning (use different models and average them)
+		- e.g Random forests or Gradient boosting (better than Random forests according to wikipedia)
+	- Neural networks
+	
+Ideas:
+	- do we also want to minimize the time for a tool to complete?

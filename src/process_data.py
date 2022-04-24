@@ -4,32 +4,37 @@ import random
 
 # This method is used to process the original raw dataset
 # It filters all jobs without file size or number of files and removes the columns job_id, state & create_time
-# The processed data (new_data) has form tool_id, filesize, num_files, runtime_seconds, slots, memory_bytes
+# The processed data (new_data) has form tool_id, file size, num_files, runtime_seconds, slots, memory_bytes
 def process_dataset(filename: str, number_rows: int, save_data: bool):
     # 34 because we have between 33 and 34 million entries
-    for i in range(34):
+    for i in range(1):
         # Filter out columns job_id, state, create_time
         original_data = np.loadtxt(filename, delimiter='|', skiprows=2 + i * number_rows, dtype=str,
-                                   usecols=(1, 3, 4, 5, 6, 7), max_rows=number_rows)
+                                   usecols=(1, 3, 4, 5, 6, 7, 8), max_rows=number_rows)
         new_data = []
-        # Dictionary: toolname_without_version --> tool_id, filesize, num_files, runtime_seconds, slots, memory_bytes
+        # Dict: tool_id --> tool_id, file size, num_files, runtime_seconds, slots, memory_bytes, create_time
         dict_tools = {}
         for row in original_data:
             stripped = [column.strip() for column in row]
             # We skip rows with no file size, number of files or memory_bytes
+            file_size = stripped[1]
+            num_files = stripped[2]
+            memory_bytes = stripped[5]
             if stripped[1] != "" and stripped[2] != "" and stripped[5] != "":
-                tool_name = stripped[0]
-                # TODO: maybe add option to make distinction between different versions of tools
-                # Find latest occurrence of '/' to remove the version of the tool
-                idx = tool_name.rfind('/')
-                if idx == -1:
-                    idx = len(tool_name)
-                tool_name_without_version = tool_name[0:idx]
-                if tool_name_without_version in dict_tools:
-                    dict_tools[tool_name_without_version].append(stripped)
-                else:
-                    dict_tools[tool_name_without_version] = [stripped]
-                new_data.append(stripped)
+                # Skip invalid data
+                if not ((file_size == 0 and num_files > 0) or (num_files == 0 and file_size > 0)):
+                    tool_name = stripped[0]
+                    # TODO: maybe add option to make distinction between different versions of tools
+                    # Find latest occurrence of '/' to remove the version of the tool
+                    idx = tool_name.rfind('/')
+                    if idx == -1:
+                        idx = len(tool_name)
+                    tool_name_without_version = tool_name[0:idx]
+                    if tool_name_without_version in dict_tools:
+                        dict_tools[tool_name_without_version].append(stripped)
+                    else:
+                        dict_tools[tool_name_without_version] = [stripped]
+                    new_data.append(stripped)
 
         # print("Number of different tools: ", len(dict_tools))
 
@@ -66,6 +71,9 @@ def process_dataset(filename: str, number_rows: int, save_data: bool):
             with open('../processed_data/dataset_stripped.txt', 'a+') as f:
                 for entry in new_data:
                     for idx, data_feature in enumerate(entry):
+                        if idx == 3 or idx == 4 or idx == 5:
+                            data_feature = data_feature.replace(".0000000")
+                         # No comma if last element
                         if idx != (len(entry) - 1):
                             f.write("%s," % data_feature)
                         else:
@@ -73,7 +81,7 @@ def process_dataset(filename: str, number_rows: int, save_data: bool):
                     f.write("\n")
 
 
-def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool):
+def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool, distinction_between_tools=False):
     # Dictionary: toolname_without_version --> number of entries in dataset
     dict_tools = {}
 
@@ -88,10 +96,11 @@ def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool):
             if idx == -1:
                 idx = len(tool_name)
             tool_name_without_version = tool_name[0:idx]
-            if tool_name_without_version in dict_tools:
-                dict_tools[tool_name_without_version] += 1
+            use_tool_name = tool_name if distinction_between_tools else tool_name_without_version
+            if use_tool_name in dict_tools:
+                dict_tools[use_tool_name] += 1
             else:
-                dict_tools[tool_name_without_version] = 1
+                dict_tools[use_tool_name] = 1
 
     list_tools_number_entries = []
     for key in dict_tools:
@@ -115,7 +124,7 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
     if specific_tool_number is None:
         set_of_tools = set(tool_data[:, 0])
     else:
-        set_of_tools = set([tool_data[specific_tool_number, 0]])
+        set_of_tools = {tool_data[specific_tool_number, 0]}
 
     # Dictionary: toolname_without_version --> toolname_without_version, filesize, num_files and memory_bytes
     dict_tools = {}
@@ -153,7 +162,7 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
             filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_top_' + str(number_tools) + \
                            '_tools_seed_' + str(rndm_seed) + '.txt'
         else:
-            filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_tool_number_' +\
+            filename_str = 'saved_data/' + str(number_samples_per_tool) + '_samples_of_tool_number_' + \
                            str(specific_tool_number) + '_seed_' + str(rndm_seed) + '.txt'
         for tool in dict_tools:
             random.seed(rndm_seed)
