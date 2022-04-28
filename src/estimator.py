@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 
-def train_and_predict_random_forest(do_scaling: bool) -> tuple[np.ndarray, np.ndarray]:
+def train_and_predict_random_forest(do_scaling: bool, seed: int) -> tuple[np.ndarray, np.ndarray]:
     """
     Returns:
     y_pred, y_true
@@ -25,12 +25,12 @@ def train_and_predict_random_forest(do_scaling: bool) -> tuple[np.ndarray, np.nd
     #                    names=["Tool_id", "Filesize", "Number_of_files", "Runtime_seconds", "Slots", "Memory_bytes"])
     # data = pd.read_csv("../processed_data/5000_samples_of_tool_number_18_seed_100.txt", sep=',',
     #                    names=["Tool_id", "Filesize", "Number_of_files", "Runtime_seconds", "Slots", "Memory_bytes"])
-    data = pd.read_csv("../processed_data/20000_samples_of_tool_number_0_seed_100.txt", sep=',',
-                       names=["Tool_id", "Filesize", "Number_of_files", "Runtime_seconds", "Slots", "Memory_bytes"])
+    data = pd.read_csv("../processed_data/200000_samples_of_tool_number_0_seed_100.txt", sep=',',
+                       names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])
 
-    # TODO: maybe scale with GB
+    # scale with GB
     scaling = 1000000000
-    relevant_columns_x = ["Filesize", "Number_of_files", "Runtime_seconds", "Slots"]
+    relevant_columns_x = ["Filesize", "Number_of_files", "Slots"]
     X = data[relevant_columns_x].values
     X = X.astype('float64')
 
@@ -43,7 +43,7 @@ def train_and_predict_random_forest(do_scaling: bool) -> tuple[np.ndarray, np.nd
         # Scale bytes of memory bytes
         y /= scaling
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
     y_train = y_train.astype('float64')
     y_test = y_test.astype('float64')
 
@@ -51,20 +51,14 @@ def train_and_predict_random_forest(do_scaling: bool) -> tuple[np.ndarray, np.nd
     X_train = sc.fit_transform(X_train)
     X_test = sc.transform(X_test)
 
-    print("X_train: ", X_train[0:5])
-    print("X_test: ", X_test[0:5])
-    print("y_train: ", y_train[0:5])
-    print("y_test ", y_test[0:5])
-
     # TODO: try out some of these params
     # criterion='absolute_error', bootstrap=False, warm_start=True
-    regressor = RandomForestRegressor(n_estimators=200, random_state=0, criterion='absolute_error')
+    regressor = RandomForestRegressor(n_estimators=200, random_state=seed)
+    # regressor = RandomForestRegressor(n_estimators=200, random_state=0, criterion='absolute_error')
+    # regressor = RandomForestRegressor(n_estimators=50, random_state=0, criterion='absolute_error')
     regressor.fit(X_train, y_train)
     print("Feature importance: ", regressor.feature_importances_)
     y_pred = regressor.predict(X_test)
-
-    print("y_pred: ", y_pred[0:5])
-    print("y_test: ", y_test[0:5])
 
     # print("Absolute error: \n", np.abs(y_pred - y_test))
 

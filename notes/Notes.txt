@@ -1,44 +1,53 @@
 Tool Resource Prediction for Genomic Datasets
 
 TODO:
+- what is the ground truth avg. for the memory used for a specific tool? Is the avg. error than so bad? If avg. memory high it's not so bad
+	- find out for 2 most used tools
+	- do train and predict on 200000 samples to compare
+	- try 3 different seeds and avg over them
+- data analysis: for most used tool: generate a graph filesize -> memory
+	- also look if there are differences of the data for different time periods (2020, 2021, 2022)
+	- memory usage vs time plot
 
-- Some entries in the data have filesize 0 but number of files more than 0: --> leave them out
-- what is the ground truth avg. for the memory used for a specific tool?
 - try out some Preproccesors, they help to improve
-
-DONE:
-- ONLY USE SAME VERSION FOR TOOLS!
-	- make distinction between versions
-- include create_time
-
-- leave out "Runtime"
+- maybe try to include the category of the tool for the prediction?
 - XGB: extra gradient boosting
 - try other models:
 	- simple models Linear Regressor or SVR
 	- Ensemble based or tree based methods
 	- e.g. Gradient boosting
 	- see on the bottom
-- data analysis: for most used tool: generate a graph filesize -> memory
-	- also look if there are differences of the data for different time periods (2020, 2021, 2022)
-	- memory usage vs time plot
-- try more samples. Already generated file with 20000 samples
-- start with a single tool or top 5 
-- use all features and do feature selection (maybe runtime not important because we dont know it beforehand)
+- create benchmarks: one low capacity model fitted on data, one high capacity model fitted on data, one model that assigns random values
+- train on top 5 tools or more
+- use all features and do feature selection
 - in future: find out if tool_id is important for prediction
-- in future: is it possible to predict runteim?
+- in future: is it possible to predict runtime?
+
+
+DONE:
+- ONLY USE SAME VERSION FOR TOOLS!
+	- make distinction between versions
+- include create_time
+- Some entries in the data have filesize 0 but number of files more than 0: --> leave them out
+- leave out "Runtime"
+- Processed whole dataset again, but got error during it. Probably memory problems. Total number entries now: 19139913
+- Filter all entries that have invalid data this includes:
+	- data with memory bytes over 1 TB
+	- data with memory bytes over 8 * assigned memory
+
 
 Questions:
-- how precise do we want to predict the memory? KB, MB or GB?
 - Categorical data: how should I encode the tool name?
 - question for later on: for the prediction, do we want to use multiple models for different tools or one model for all tools?
 
 Infos:
-- Random forest learns feature importance dependent on the output
 - write report 20-30 pages
 - bw cloud: https://portal.bw-cloud.org/
 - Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
+- Tool Configurations: https://github.com/usegalaxy-eu/infrastructure-playbook/blob/master/files/galaxy/dynamic_rules/usegalaxy/tool_destinations.yaml
 - Chat: https://app.element.io/#/welcome
 	- @anupkumar:matrix.org
+- Handling bis csv Files: https://www.gigasheet.co/
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out
@@ -50,8 +59,6 @@ https://upcommons.upc.edu/bitstream/handle/2117/106670/128908.pdf
 				
 
 Possible methods:
-	- Linear Regression
-	- Support Vector Regression (better regularization than Linear Regression)
 	- Decision Trees
 	- Ensemble Learning (use different models and average them)
 		- e.g Random forests or Gradient boosting (better than Random forests according to wikipedia)
