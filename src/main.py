@@ -1,6 +1,8 @@
 import estimator
 from process_data import *
 import argparse
+import yaml
+from yaml.loader import SafeLoader
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Argument parser")
@@ -30,16 +32,26 @@ if __name__ == '__main__':
     #                           number_samples_per_tool=150,
     #                           distinction_between_versions=False)
 
-    # extract_entries_from_data("../processed_data/dataset_labeled/valid_data.txt",
-    #                           "../processed_data/most_used_tools.txt",
-    #                           number_tools=100,
-    #                           rows_per_chunk=1000000,
-    #                           rndm_seed=100,
-    #                           sample_data=True,
-    #                           number_samples_per_tool=200000,
-    #                           distinction_between_versions=True,
-    #                           specific_tool_number=0)
+    # for i in range(2):
+    #     extract_entries_from_data("../processed_data/dataset_labeled/valid_data.txt",
+    #                               "../processed_data/most_used_tools.txt",
+    #                               number_tools=100,
+    #                               rows_per_chunk=1000000,
+    #                               rndm_seed=100,
+    #                               sample_data=True,
+    #                               number_samples_per_tool=20000,
+    #                               distinction_between_versions=True,
+    #                               specific_tool_number=i)
 
-    y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=50)
-    y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=150)
-    y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=1000)
+    with open("../run_configurations/train_random_forest.yaml") as f:
+        run_configs = yaml.load(f, Loader=SafeLoader)
+    for key in run_configs.keys():
+        run_configuration = run_configs[key]
+        estimator.train_and_predict_random_forest(do_scaling=True, seed=run_configuration["seed"],
+                                                  is_mixed_data=run_configuration["is_mixed_data"],
+                                                  run_config=run_configuration)
+
+    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=0, is_mixed_data=False)
+    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=50)
+    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=150)
+    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=1000)

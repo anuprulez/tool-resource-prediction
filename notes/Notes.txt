@@ -1,16 +1,22 @@
 Tool Resource Prediction for Genomic Datasets
 
 TODO:
-- what is the ground truth avg. for the memory used for a specific tool? Is the avg. error than so bad? If avg. memory high it's not so bad
-	- find out for 2 most used tools
-	- do train and predict on 200000 samples to compare
-	- try 3 different seeds and avg over them
+- play around with parameters for RF
+- label the data with quartals and see if data from specific quartals has higher error rates
+- try out some Preproccesors, they help to improve
+- use other models as well
+- try 3 different seeds and avg over them
 - data analysis: for most used tool: generate a graph filesize -> memory
 	- also look if there are differences of the data for different time periods (2020, 2021, 2022)
 	- memory usage vs time plot
 
-- try out some Preproccesors, they help to improve
+- plot: filesize vs error for mixed_data, valid_data and faulty_data
+- plot: filesize vs memory_bytes
+- see if training changes if we use 1st quartal 2020, 2nd quartal 2020 etc.
+
+
 - maybe try to include the category of the tool for the prediction?
+- try to get features for the different tools: like number params
 - XGB: extra gradient boosting
 - try other models:
 	- simple models Linear Regressor or SVR
@@ -20,11 +26,15 @@ TODO:
 - create benchmarks: one low capacity model fitted on data, one high capacity model fitted on data, one model that assigns random values
 - train on top 5 tools or more
 - use all features and do feature selection
+
+
+
 - in future: find out if tool_id is important for prediction
 - in future: is it possible to predict runtime?
 
 
 DONE:
+- what is the error for faulty_data compared to valid_data
 - ONLY USE SAME VERSION FOR TOOLS!
 	- make distinction between versions
 - include create_time

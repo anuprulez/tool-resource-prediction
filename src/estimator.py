@@ -9,28 +9,51 @@ from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
 
 import sys
+import time
+from datetime import datetime
+import json
 import numpy as np
 import pandas as pd
 
 
-def train_and_predict_random_forest(do_scaling: bool, seed: int) -> tuple[np.ndarray, np.ndarray]:
+def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None) \
+        -> tuple[np.ndarray, np.ndarray]:
     """
     Returns:
     y_pred, y_true
     """
     np.set_printoptions(threshold=sys.maxsize)
 
-    # data = pd.read_csv("../processed_data/50_samples_of_top_1_tools_seed_100.txt", sep=',', names=["Tool_id", "Filesize", "Number_of_files", "Memory_bytes"])
+    if is_mixed_data:
+        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
+    else:
+        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+
+    # dataset_path = "../processed_data/mixed_data/4000_faulty_20000_valid_tool_0.txt"
+    # dataset_path = "../processed_data/mixed_data/500_faulty_19500_valid_tool_0.txt"
+    # dataset_path = "../processed_data/labelled_valid/first_20000_samples_of_tool_number_0_seed_100.txt"
+    dataset_path = "../processed_data/first_20000_samples_of_tool_number_0_seed_100.txt"
+
+    # data = pd.read_csv("../processed_data/50_samples_of_top_1_tools_seed_100.txt", sep=',', names=column_names)
     # data = pd.read_csv("../processed_data/5000_samples_of_top_1_tools_seed_100.txt", sep=',',
-    #                    names=["Tool_id", "Filesize", "Number_of_files", "Runtime_seconds", "Slots", "Memory_bytes"])
+    #                    names=column_names)
     # data = pd.read_csv("../processed_data/5000_samples_of_tool_number_18_seed_100.txt", sep=',',
-    #                    names=["Tool_id", "Filesize", "Number_of_files", "Runtime_seconds", "Slots", "Memory_bytes"])
-    data = pd.read_csv("../processed_data/200000_samples_of_tool_number_0_seed_100.txt", sep=',',
-                       names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])
+    #                    names=column_names)
+    # data = pd.read_csv("../processed_data/200000_samples_of_tool_number_0_seed_100.txt", sep=',',
+    #                    names=column_names)
+    # data = pd.read_csv("../processed_data/first_20000_samples_of_tool_number_0_seed_100.txt", sep=',',
+    #                    names=column_names)
+    if run_config is not None:
+        dataset_path = run_config["dataset_path"]
+    data = pd.read_csv(dataset_path, sep=',', names=column_names)
+
 
     # scale with GB
     scaling = 1000000000
-    relevant_columns_x = ["Filesize", "Number_of_files", "Slots"]
+    if is_mixed_data:
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Validity"]
+    else:
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots"]
     X = data[relevant_columns_x].values
     X = X.astype('float64')
 
@@ -43,28 +66,77 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int) -> tuple[np.nda
         # Scale bytes of memory bytes
         y /= scaling
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
+    X_train_orig, X_test_orig, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
     y_train = y_train.astype('float64')
     y_test = y_test.astype('float64')
 
     sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
+    if is_mixed_data:
+        # Scale all columns beside 'Validity'
+        X_train = sc.fit_transform(X_train_orig[:, 0:-1])
+        X_test = sc.transform(X_test_orig[:, 0:-1])
+    else:
+        X_train = sc.fit_transform(X_train_orig)
+        X_test = sc.transform(X_test_orig)
 
     # TODO: try out some of these params
     # criterion='absolute_error', bootstrap=False, warm_start=True
-    regressor = RandomForestRegressor(n_estimators=200, random_state=seed)
+    # regressor = RandomForestRegressor(n_estimators=200, random_state=seed)
     # regressor = RandomForestRegressor(n_estimators=200, random_state=0, criterion='absolute_error')
     # regressor = RandomForestRegressor(n_estimators=50, random_state=0, criterion='absolute_error')
+    if run_config is not None:
+        regressor = RandomForestRegressor(**run_config["model_params"])
+
+    start_time = time.time()
     regressor.fit(X_train, y_train)
-    print("Feature importance: ", regressor.feature_importances_)
+    end_time = time.time()
+    time_for_training_mins = (end_time - start_time) / 60
+    print("Time taken in minutes for training:", time_for_training_mins)
+
+    feature_importance = regressor.feature_importances_
+    print("Feature importance:", feature_importance)
+
     y_pred = regressor.predict(X_test)
+    mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
+    mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
+    root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
+    print('Mean Absolute Error:', mean_abs_error)
+    print('Mean Squared Error:', mean_squared_error)
+    print('Root Mean Squared Error:', root_mean_squared_error)
 
-    # print("Absolute error: \n", np.abs(y_pred - y_test))
+    X_test_unscaled = sc.inverse_transform(X_test)
 
-    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-    print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
-    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+    filename_str = "saved_data/training_results_" + str(datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")) + ".txt"
+    with open(filename_str, 'a+') as f:
+        f.write(f"Dataset_path: {dataset_path}\n")
+        f.write(f"Is_mixed_data: {is_mixed_data}\n")
+        f.write(f"Seed: {seed}\n")
+        f.write(f"Model_params: {json.dumps(run_config['model_params'])}\n")
+        f.write(f"Time for training in mins: {time_for_training_mins}\n")
+        f.write(f"Feature importance: {feature_importance}\n")
+        f.write(f"Mean absolute error: {mean_abs_error}\n")
+        f.write(f"Mean squared error: {mean_squared_error}\n")
+        f.write(f"Root mean squared error: {root_mean_squared_error}\n")
+        f.write("############################\n")
+        if is_mixed_data:
+            f.write("Validity, Filesize, Prediction, Target\n")
+            f.write("############################\n")
+            for idx, entry in enumerate(X_test_orig):
+                filesize = X_test_unscaled[idx][0]
+                validity = entry[-1]
+                prediction = y_pred[idx]
+                target = y_test[idx]
+                f.write(f"{validity},{filesize},{prediction},{target}")
+                f.write("\n")
+        else:
+            f.write("Filesize, Prediction, Target\n")
+            f.write("############################\n")
+            for idx, entry in enumerate(X_test_orig):
+                filesize = X_test_unscaled[idx][0]
+                prediction = y_pred[idx]
+                target = y_test[idx]
+                f.write(f"{filesize},{prediction},{target}")
+                f.write("\n")
 
     return y_pred, y_test
 
