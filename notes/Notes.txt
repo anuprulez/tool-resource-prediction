@@ -1,6 +1,12 @@
 Tool Resource Prediction for Genomic Datasets
 
 TODO:
+- dont look at the tools that are used the most but instead that have high memory usage. This has more impact on optimization
+	- hifiasm, any tool with *spades in name, trinity, rnastar
+- try threshold where entries with filesize below lets say 0.05 gb or something like that are filtered out
+- plot with date as group
+- add tool name when saving training_results
+- add timestamp when saving an entry for training_results
 - play around with parameters for RF
 - label the data with quartals and see if data from specific quartals has higher error rates
 - try out some Preproccesors, they help to improve
