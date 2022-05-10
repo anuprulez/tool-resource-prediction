@@ -32,24 +32,41 @@ if __name__ == '__main__':
     #                           number_samples_per_tool=150,
     #                           distinction_between_versions=False)
 
-    # for i in range(2):
+    # tools_to_extract = [1858, 2352, 4300, 4303, 4574]
+    # for tool_num in tools_to_extract:
     #     extract_entries_from_data("../processed_data/dataset_labeled/valid_data.txt",
     #                               "../processed_data/most_used_tools.txt",
-    #                               number_tools=100,
+    #                               number_tools=5053,
     #                               rows_per_chunk=1000000,
     #                               rndm_seed=100,
     #                               sample_data=True,
     #                               number_samples_per_tool=20000,
     #                               distinction_between_versions=True,
-    #                               specific_tool_number=i)
+    #                               specific_tool_number=tool_num)
 
-    with open("../run_configurations/train_random_forest.yaml") as f:
-        run_configs = yaml.load(f, Loader=SafeLoader)
-    for key in run_configs.keys():
-        run_configuration = run_configs[key]
-        estimator.train_and_predict_random_forest(do_scaling=True, seed=run_configuration["seed"],
-                                                  is_mixed_data=run_configuration["is_mixed_data"],
-                                                  run_config=run_configuration)
+    # specific = True
+    # # specific = False
+    # if specific:
+    #     specific_run_config = {
+    #         "dataset_path": "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt",
+    #         "is_mixed_data": False,
+    #         "seed": 0,
+    #         "model_params": {
+    #             "n_estimators": 200,
+    #             "random_state": 0,
+    #             "criterion": "absolute_error"
+    #         }}
+    #     estimator.train_and_predict_random_forest(do_scaling=True, seed=specific_run_config["seed"],
+    #                                               is_mixed_data=specific_run_config["is_mixed_data"],
+    #                                               run_config=specific_run_config)
+    # else:
+    #     with open("../run_configurations/train_random_forest.yaml") as f:
+    #         run_configs = yaml.load(f, Loader=SafeLoader)
+    #     for key in run_configs.keys():
+    #         run_configuration = run_configs[key]
+    #         estimator.train_and_predict_random_forest(do_scaling=True, seed=run_configuration["seed"],
+    #                                                   is_mixed_data=run_configuration["is_mixed_data"],
+    #                                                   run_config=run_configuration)
 
     # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=0, is_mixed_data=False)
     # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=50)

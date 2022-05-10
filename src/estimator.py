@@ -47,15 +47,17 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
         dataset_path = run_config["dataset_path"]
     data = pd.read_csv(dataset_path, sep=',', names=column_names)
 
-
     # scale with GB
     scaling = 1000000000
     if is_mixed_data:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Validity"]
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time", "Validity"]
     else:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots"]
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
     X = data[relevant_columns_x].values
-    X = X.astype('float64')
+    if is_mixed_data:
+        X[:, 0:-2] = X[:, 0:-2].astype('float64')
+    else:
+        X[:, 0:-1] = X[:, 0:-1].astype('float64')
 
     y = data["Memory_bytes"].values
     y = y.astype('float64')
@@ -72,12 +74,13 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
 
     sc = StandardScaler()
     if is_mixed_data:
-        # Scale all columns beside 'Validity'
+        # Scale all columns beside 'Validity' & 'Create_time
+        X_train = sc.fit_transform(X_train_orig[:, 0:-2])
+        X_test = sc.transform(X_test_orig[:, 0:-2])
+    else:
+        # Scale all columns beside 'Create_time
         X_train = sc.fit_transform(X_train_orig[:, 0:-1])
         X_test = sc.transform(X_test_orig[:, 0:-1])
-    else:
-        X_train = sc.fit_transform(X_train_orig)
-        X_test = sc.transform(X_test_orig)
 
     # TODO: try out some of these params
     # criterion='absolute_error', bootstrap=False, warm_start=True
@@ -106,8 +109,17 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
 
     X_test_unscaled = sc.inverse_transform(X_test)
 
+    # Extract tool name
+    tool_name = data["Tool_id"][0]
+    start_idx = 0
+    idx = tool_name.rfind('/')
+    if idx != -1:
+        start_idx = tool_name[0:idx].rfind('/') + 1
+    tool_name = tool_name[start_idx:]
+
     filename_str = "saved_data/training_results_" + str(datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")) + ".txt"
     with open(filename_str, 'a+') as f:
+        f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {dataset_path}\n")
         f.write(f"Is_mixed_data: {is_mixed_data}\n")
         f.write(f"Seed: {seed}\n")
@@ -119,25 +131,25 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write("############################\n")
         if is_mixed_data:
-            f.write("Validity, Filesize, Prediction, Target\n")
+            f.write("Filesize, Prediction, Target, Create_time, Validity\n")
             f.write("############################\n")
             for idx, entry in enumerate(X_test_orig):
                 filesize = X_test_unscaled[idx][0]
                 validity = entry[-1]
                 prediction = y_pred[idx]
                 target = y_test[idx]
-                f.write(f"{validity},{filesize},{prediction},{target}")
+                create_time = entry[-1]
+                f.write(f"{filesize},{prediction},{target},{create_time},{validity}")
                 f.write("\n")
         else:
-            f.write("Filesize, Prediction, Target\n")
+            f.write("Filesize, Prediction, Target, Create_time\n")
             f.write("############################\n")
             for idx, entry in enumerate(X_test_orig):
                 filesize = X_test_unscaled[idx][0]
                 prediction = y_pred[idx]
                 target = y_test[idx]
-                f.write(f"{filesize},{prediction},{target}")
+                create_time = entry[-1]
+                f.write(f"{filesize},{prediction},{target},{create_time}")
                 f.write("\n")
 
     return y_pred, y_test
-
-# def train_and_predict
