@@ -1,0 +1,110 @@
+# rnaspades
+train1:
+  dataset_path: "../processed_data/most_memory_tools/tools_with_spades/rnaspades/3.9.0.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+# rna_star
+train2:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.5.2b-1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train3:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.6.0b-1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train4:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.6.0b-2.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train5:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.7.2b.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train6:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.7.5b.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train7:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.7.6a.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train8:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.7.7a.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+train9:
+  dataset_path: "../processed_data/most_memory_tools/rna_star/2.7.8a.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+# rna_starsolo
+train10:
+  dataset_path: "../processed_data/most_memory_tools/rna_starsolo/2.7.2b1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+# trinity
+train11:
+  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+# trinity_align_and_estimate_abundance
+train12:
+  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity_align_and_estimate_abundance/2.9.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"
+# trinity_abundance_estimates_to_matrix
+train13:
+  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity_abundance_estimates_to_matrix/2.9.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    criterion: "absolute_error"

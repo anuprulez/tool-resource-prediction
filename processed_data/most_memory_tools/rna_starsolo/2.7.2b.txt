@@ -1,0 +1,13 @@
+﻿toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,259727297,6,4,115036385280,2020-12-03 16:56:59.459971
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,7044985928,6,4,29409083392,2020-08-12 23:03:39.112763
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,106293661,4,4,35088547840,2020-12-04 10:32:56.59936
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,496212,4,4,116678144000,2020-12-03 15:56:49.312052
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,143966308,4,4,170216206336,2020-12-03 18:44:30.765411
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,259427048,4,4,54195490816,2020-12-03 15:56:49.310642
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,259727297,6,4,44462714880,2020-12-03 16:57:07.651219
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,119268682,6,4,42342047744,2020-08-12 11:45:28.648538
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,778327606,4,4,47778775040,2020-11-25 09:16:00.016862
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,89995904,4,4,63429185536,2020-12-04 10:15:11.316799
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,777035749,4,4,65873682432,2020-11-25 09:16:00.015042
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,14048786,4,4,46334279680,2020-12-03 18:44:30.767015
+toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2b,15955413,4,4,48451846144,2020-12-04 10:15:11.32444

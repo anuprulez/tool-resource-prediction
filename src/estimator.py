@@ -16,7 +16,8 @@ import numpy as np
 import pandas as pd
 
 
-def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None) \
+def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None,
+                                    doStandardScale=True) \
         -> tuple[np.ndarray, np.ndarray]:
     """
     Returns:
@@ -72,15 +73,20 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
     y_train = y_train.astype('float64')
     y_test = y_test.astype('float64')
 
-    sc = StandardScaler()
-    if is_mixed_data:
-        # Scale all columns beside 'Validity' & 'Create_time
-        X_train = sc.fit_transform(X_train_orig[:, 0:-2])
-        X_test = sc.transform(X_test_orig[:, 0:-2])
+    doStandardScale = False
+    if doStandardScale:
+        sc = StandardScaler()
+        if is_mixed_data:
+            # Scale all columns beside 'Validity' & 'Create_time
+            X_train = sc.fit_transform(X_train_orig[:, 0:-2])
+            X_test = sc.transform(X_test_orig[:, 0:-2])
+        else:
+            # Scale all columns beside 'Create_time
+            X_train = sc.fit_transform(X_train_orig[:, 0:-1])
+            X_test = sc.transform(X_test_orig[:, 0:-1])
     else:
-        # Scale all columns beside 'Create_time
-        X_train = sc.fit_transform(X_train_orig[:, 0:-1])
-        X_test = sc.transform(X_test_orig[:, 0:-1])
+        X_train = X_train_orig[:, 0:-1]
+        X_test = X_test_orig[:, 0:-1]
 
     # TODO: try out some of these params
     # criterion='absolute_error', bootstrap=False, warm_start=True
@@ -107,7 +113,10 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
     print('Mean Squared Error:', mean_squared_error)
     print('Root Mean Squared Error:', root_mean_squared_error)
 
-    X_test_unscaled = sc.inverse_transform(X_test)
+    if doStandardScale:
+        X_test_unscaled = sc.inverse_transform(X_test)
+    else:
+        X_test_unscaled = X_test
 
     # Extract tool name
     tool_name = data["Tool_id"][0]
@@ -117,7 +126,7 @@ def train_and_predict_random_forest(do_scaling: bool, seed: int, is_mixed_data: 
         start_idx = tool_name[0:idx].rfind('/') + 1
     tool_name = tool_name[start_idx:]
 
-    filename_str = "saved_data/training_results_" + str(datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")) + ".txt"
+    filename_str = "saved_data/training_" + tool_name.replace("/", "-") + "_" + str(datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")) + ".txt"
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {dataset_path}\n")
