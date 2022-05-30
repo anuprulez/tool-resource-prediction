@@ -1,4 +1,0 @@
-﻿toolshed.g2.bx.psu.edu/repos/iuc/trinity_contig_exn50_statistic/trinity_contig_exn50_statistic/2.8.5,42629,2,1,127500288,2020-01-19 08:32:02.826713
-toolshed.g2.bx.psu.edu/repos/iuc/trinity_contig_exn50_statistic/trinity_contig_exn50_statistic/2.8.5,42955,2,1,130052096,2020-01-19 07:45:48.129566
-toolshed.g2.bx.psu.edu/repos/iuc/trinity_contig_exn50_statistic/trinity_contig_exn50_statistic/2.8.5,60896,2,1,128004096,2020-01-12 20:00:23.835924
-toolshed.g2.bx.psu.edu/repos/iuc/trinity_contig_exn50_statistic/trinity_contig_exn50_statistic/2.8.5,66479,2,1,1379180544,2020-01-18 14:05:21.77873

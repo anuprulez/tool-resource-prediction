@@ -59,11 +59,12 @@ Infos:
 - write report 20-30 pages
 - ZOOM Link: https://uni-freiburg.zoom.us/j/64335242368?pwd=YmpURjd3Q1YwWHgwYW5Eb2hLeVB6QT09
 - bw cloud: https://portal.bw-cloud.org/
-- Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
+- Dataset: https://usegalaxy.eu/u/kumara/h/tool-resources
 - Tool Configurations: https://github.com/usegalaxy-eu/infrastructure-playbook/blob/master/files/galaxy/dynamic_rules/usegalaxy/tool_destinations.yaml
 - Chat: https://app.element.io/#/welcome
 	- @anupkumar:matrix.org
 - Handling bis csv Files: https://www.gigasheet.co/
+- Old Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out

@@ -1,4 +1,0 @@
-﻿toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2a1,71,6,4,54178619392,2020-06-22 00:02:14.364204
-toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2a1,243985,10,4,70891311104,2020-07-24 14:39:53.898388
-toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2a1,7044985928,6,4,29438103552,2020-08-12 23:23:01.898577
-toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.2a1,47878,6,4,69481549824,2020-07-14 16:44:52.694266

@@ -10,16 +10,16 @@ np.set_printoptions(threshold=sys.maxsize)
 # This method is used to process the original raw dataset
 # It filters all jobs without file size or number of files and removes the columns job_id, state & create_time
 # The processed data (new_data) has form tool_id, file size, num_files, runtime_seconds, slots, memory_bytes
-def process_dataset(filename: str, number_rows: int, save_data: bool):
-    # 34 because we have between 33 and 34 million entries
-    for i in range(34):
-        # Filter out columns job_id, state, create_time
+def process_dataset(filename: str, number_rows: int, save_data: bool, use_dict_tools=False):
+    # 39 because we have between 38 and 39 million entries
+    for i in range(39):
+        # Filter out columns job_id, state
         original_data = np.loadtxt(filename, delimiter='|', skiprows=2 + i * number_rows, dtype=str,
                                    usecols=(1, 3, 4, 5, 6, 7, 8), max_rows=number_rows)
         new_data = []
         # Dict: tool_id --> tool_id, file size, num_files, runtime_seconds, slots, memory_bytes, create_time
         dict_tools = {}
-        for row in original_data:
+        for idx, row in enumerate(original_data):
             stripped = [column.strip() for column in row]
             # We skip rows with no file size, number of files or memory_bytes
             if stripped[1] != "" and stripped[2] != "" and stripped[5] != "":
@@ -33,49 +33,20 @@ def process_dataset(filename: str, number_rows: int, save_data: bool):
                     if idx == -1:
                         idx = len(tool_name)
                     tool_name_without_version = tool_name[0:idx]
-                    if tool_name_without_version in dict_tools:
-                        dict_tools[tool_name_without_version].append(stripped)
-                    else:
-                        dict_tools[tool_name_without_version] = [stripped]
+                    if use_dict_tools:
+                        if tool_name_without_version in dict_tools:
+                            dict_tools[tool_name_without_version].append(stripped)
+                        else:
+                            dict_tools[tool_name_without_version] = [stripped]
+                    stripped[3] = stripped[3].replace(".0000000", "")
+                    stripped[4] = stripped[4].replace(".0000000", "")
+                    stripped[5] = stripped[5].replace(".0000000", "")
                     new_data.append(stripped)
-
-        # print("Number of different tools: ", len(dict_tools))
-
-        # Find out which tool has most entries
-
-        # number_of_entries_per_tool = {}
-        # for key in dict_tools:
-        #     entries = dict_tools[key]
-        #     number_of_entries_per_tool[key] = len(entries)
-        # highest_value = max(number_of_entries_per_tool, key=number_of_entries_per_tool.get)
-        # print("Tool", highest_value, "has most entries. In total", number_of_entries_per_tool[highest_value])
-        # print("####################################")
-        #
-        # list_tools_number_entries = []
-        # for key in dict_tools:
-        #     entries = dict_tools[key]
-        #     list_tools_number_entries.append((key, len(entries)))
-        #
-        # # Sort list such that most used tool is at the beginning
-        # list_tools_number_entries = sorted(list_tools_number_entries, key=lambda tup: -tup[1])
-
         if save_data:
-            # # Write data of tool with most entries into a file
-            # with open('saved_data/tool_with_most_entries.txt', 'a') as f:
-            #     for item in dict_tools[highest_value]:
-            #         f.write("%s\n" % item)
-            #
-            # # Write list of most used tools into a file
-            # with open('saved_data/most_used_tools.txt', 'a') as f:
-            #     for entry in list_tools_number_entries:
-            #         f.write("%s, %s\n" % (entry[0], entry[1]))
-
             # Write all entries to a file
             with open('saved_data/dataset_stripped.txt', 'a+') as f:
                 for entry in new_data:
                     for idx, data_feature in enumerate(entry):
-                        if idx == 3 or idx == 4 or idx == 5:
-                            data_feature = data_feature.replace(".0000000", "")
                         # No comma if last element
                         if idx != (len(entry) - 1):
                             f.write("%s," % data_feature)
@@ -89,7 +60,7 @@ def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool, distinc
     dict_tools = {}
 
     # range should be such that it is rounded up to number of rows of file
-    for i in range(19):
+    for i in range(26):
         # data has form tool_id, filesize, num_files, runtime_seconds, slots, memory_bytes, create_time
         data = np.loadtxt(filename, delimiter=',', skiprows=i * rows_per_chunk, dtype=str, max_rows=rows_per_chunk,
                           usecols=0)
@@ -181,7 +152,7 @@ def remove_faulty_entries_from_data(filename_dataset: str, filename_tool_config:
         tool_configs = yaml.load(f, Loader=SafeLoader)
 
     # range should be such that it is rounded up to number of rows of file
-    for i in range(20):
+    for i in range(26):
         valid_data = []
         faulty_data = []
 

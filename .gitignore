@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/saved_plots/filesize vs absolute error/Thumbs.db
+/saved_plots/filesize vs memory_bytes/Thumbs.db

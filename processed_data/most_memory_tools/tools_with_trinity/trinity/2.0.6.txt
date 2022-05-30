@@ -1,4 +1,0 @@
-﻿toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/2.0.6,7303471,2,4,130670592,2020-04-18 07:18:41.366935
-toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/2.0.6,1064836595,2,4,128417792,2020-04-18 07:20:20.799844
-toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/2.0.6,1064836595,2,4,131149824,2020-04-16 18:03:55.302984
-toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/2.0.6,1064836595,2,4,128847872,2020-04-16 18:10:11.618791

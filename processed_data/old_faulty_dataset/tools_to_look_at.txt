@@ -1,0 +1,93 @@
+tool name with version, idx (zero based) in most_used_tools.txt --> number samples
+
+hifiasm:
+	hifiasm/0.14+galaxy0: 1858 --> 81
+	hifiasm/0.15.3+galaxy0: 4574 --> 2
+	hifiasm/0.15.4+galaxy0: 2352 --> 48
+	hifiasm/0.16.1+galaxy0: 4303 & hifiasm/0.16.1+galaxy1: 4300 --> 6
+-----------------------------
+tools with spades in name: 
+	spades/3.11.1: 4809 & spades/3.11.1+galaxy1: 4247 --> 5
+	spades/3.12.0+galaxy1: 108 --> 100
+	spades/3.15.3+galaxy2: 4103 --> 7
+	-----------------------------
+	metaspades/1.0: 4810 --> 1
+	metaspades/3.9.0: 675 --> 100
+	metaspades/3.9.0.1: 749 --> 100
+	-----------------------------
+	rnaspades/3.9.0: 4104 --> 5
+	rnaspades/3.9.0.1: 917 --> 365
+	rnaspades/3.9.0.2: 1109 --> 240
+	rnaspades/3.9.0.3: 4634 --> 2
+	rnaspades/3.15.3+galaxy2: 4973 --> 1
+	-----------------------------
+	spades_rnaviralspades/3.15.3+galaxy2: 4826 --> 1
+-----------------------------
+rnastar:
+	rna_star/2.4.0d: 5012 --> 1
+	rna_star/2.4.0d-2: 1491 --> 128
+	rna_star/2.5.2b-0: 2028 --> 68
+	rna_star/2.5.2b-1: 634 --> 786
+	rna_star/2.5.2b-2: 1284 --> 175
+	rna_star/2.6.0b-1: 397 --> 1827
+	rna_star/2.6.0b-2: 537 --> 1132
+	rna_star/2.7.2a: 1234 --> 192
+	rna_star/2.7.2b: 45 --> 55677
+	rna_star/2.7.5b: 147 --> 9887
+	rna_star/2.7.6a: 217 --> 5917
+	rna_star/2.7.7a: 190 --> 7142
+	rna_star/2.7.8a: 122 & rna_star/2.7.8a+galaxy0: 156 --> 20705
+-----------------------------
+rna_starsolo:
+	rna_starsolo/2.7.2a1: 4172 --> 4
+	rna_starsolo/2.7.2b: 3517 --> 13
+	rna_starsolo/2.7.2b1: 845 --> 430
+	rna_starsolo/2.7.5b: 1481 --> 130
+	rna_starsolo/2.7.6a: 1896 --> 79
+	rna_starsolo/2.7.7a: 1891 --> 79
+	rna_starsolo/2.7.8a: 1173 --> 210
+trinity:
+	trinity/2.0.6: 4190 --> 4
+	trinity/2.1.1.1: 4921 --> 1
+	trinity/2.2.0.0: 4456 --> 2
+	trinity/2.4.0.0: 4296 --> 3
+	trinity/2.6.6: 3623 --> 11
+	trinity/2.8.3: 4284 --> 3
+	trinity/2.8.4: 1206 --> 199
+	trinity/2.8.5: 1423 --> 141
+	trinity/2.9.1: 471 & trinity/2.9.1+galaxy1: 789 & trinity/2.9.1+galaxy2: 2172 --> 1979
+	---------------------------
+	trinity_align_and_estimate_abundance/2.8.4: 1389 --> 151
+	trinity_align_and_estimate_abundance/2.8.5: 2300 --> 51
+	trinity_align_and_estimate_abundance/2.9.1: 1172 & trinity_align_and_estimate_abundance/2.9.1+galaxy1: 744 --> 778
+	---------------------------
+	trinity_abundance_estimates_to_matrix/2.8.4: 1161 --> 216
+	trinity_abundance_estimates_to_matrix/2.8.5: 2086 --> 64
+	trinity_abundance_estimates_to_matrix/2.9.1: 902 --> 378
+	---------------------------
+	trinity_run_de_analysis/2.2.0.0: 4750 --> 1
+	trinity_run_de_analysis/2.8.4: 1602 --> 109
+	trinity_run_de_analysis/2.8.5: 1951 --> 74
+	trinity_run_de_analysis/2.9.1: 1139 --> 223
+	---------------------------
+	trinity_analyze_diff_expr/2.6.6: 4919 --> 1
+	trinity_analyze_diff_expr/2.8.4: 4862 & trinity_analyze_diff_expr/2.8.4+galaxy1: 1167 --> 214
+	---------------------------
+	trinity_gene_to_trans_map/2.8.4: 1263 --> 182
+	---------------------------
+	trinity_super_transcripts/2.8.4: 2960 --> 25
+	trinity_super_transcripts/2.8.5: 3422 --> 14
+	trinity_super_transcripts/2.9.1: 1454 --> 135
+	---------------------------
+	trinity_filter_low_expr_transcripts/2.8.4: 2204 --> 55
+	trinity_filter_low_expr_transcripts/2.8.5: 3353 --> 16
+	trinity_filter_low_expr_transcripts/2.9.1: 1622 --> 107
+	---------------------------
+	trinity_samples_qccheck/2.8.3: 4865 --> 1
+	trinity_samples_qccheck/2.8.4: 1703 --> 97
+	---------------------------
+	trinity_contig_exn50_statistic/2.8.4: 3052 --> 23
+	trinity_contig_exn50_statistic/2.8.5: 4146 --> 4
+	trinity_contig_exn50_statistic/2.9.1: 1931 --> 76
+	---------------------------
+	trinity_define_clusters_by_cutting_tree/2.8.4+galaxy1: 2215 --> 55
