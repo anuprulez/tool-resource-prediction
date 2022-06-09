@@ -3,6 +3,7 @@ from process_data import *
 import argparse
 import yaml
 from yaml.loader import SafeLoader
+from tqdm import tqdm
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Argument parser")
@@ -45,9 +46,10 @@ if __name__ == '__main__':
     #                               specific_tool_number=tool_num)
 
     # specific = True
-    # # specific = False
+    # specific = False
     # if specific:
     #     specific_run_config = {
+    #         "model_type": "rf",
     #         "dataset_path": "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt",
     #         "is_mixed_data": False,
     #         "seed": 0,
@@ -56,19 +58,17 @@ if __name__ == '__main__':
     #             "random_state": 0,
     #             "criterion": "absolute_error"
     #         }}
-    #     estimator.train_and_predict_random_forest(do_scaling=True, seed=specific_run_config["seed"],
-    #                                               is_mixed_data=specific_run_config["is_mixed_data"],
-    #                                               run_config=specific_run_config)
+    #     estimator.training_pipeline(run_configuration=specific_run_config, save=args.save)
     # else:
-    #     with open("../run_configurations/high_memory_tools_1.yaml") as f:
+    #     with open("../run_configurations/remove_outliers1.yaml") as f:
     #         run_configs = yaml.load(f, Loader=SafeLoader)
-    #     for key in run_configs.keys():
+    #     for key in tqdm(run_configs.keys()):
     #         run_configuration = run_configs[key]
-    #         estimator.train_and_predict_random_forest(do_scaling=True, seed=run_configuration["seed"],
-    #                                                   is_mixed_data=run_configuration["is_mixed_data"],
-    #                                                   run_config=run_configuration)
+    #         estimator.training_pipeline(run_configuration=run_configuration, save=args.save)
 
-    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=0, is_mixed_data=False)
-    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=50)
-    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=150)
-    # y_pred, y_true = estimator.train_and_predict_random_forest(do_scaling=True, seed=1000)
+    # Baseline pipeline
+    with open("../run_configurations/remove_outliers1.yaml") as f:
+        run_configs = yaml.load(f, Loader=SafeLoader)
+    for key in tqdm(run_configs.keys()):
+        run_configuration = run_configs[key]
+        estimator.baseline_pipeline(run_configuration=run_configuration, save=args.save)

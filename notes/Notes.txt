@@ -1,26 +1,28 @@
 Tool Resource Prediction for Genomic Datasets
 
-Meeting times:
-- Skip next week, instead next meeting 01.06 (Wednesday), as early as possible timewise
-- insead of 23.06 lets do 24.06
-
 Question:
+- should I remove only values of train set or test set as well?
+- could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
+
 - what does the job record? The maximum memory usage of a tool
-- start a job for e.g. rna star with high filesize and query and see if it gets recorded correctly
 
 TODO:
-- put the plots in the doc
+- calc R2 value before --> then remove data points which lie outside of 2 standard deviations -> calc R2 again and compare
+	- should I remove only values of train set or test set as well?
+- Try XGB: https://xgboost.readthedocs.io/en/stable/python/python_api.html
+- Create a baseline: use assigned memory from the tool-configuration file
+- Hyperparameter Optimization with scikit-learn
+	- Grid search
+	- Random search
+	- both with successive halving
+- our task should be able to be given a percentage with which the tool should succeed given the output of our model. Try to find a way to include this
+	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)
+	- http://contrib.scikit-learn.org/forest-confidence-interval/index.html
 - look into the code here to see how the data recording is done: https://github.com/usegalaxy-eu/galaxy/tree/release_22.01_europe/lib/galaxy
 - look here: https://bioblend.readthedocs.io/en/latest/api_docs/galaxy/all.html#module-bioblend.galaxy.jobs
-- start a job for e.g. rna star with high filesize and query and see if it gets recorded correctly
-- try threshold where entries with filesize below lets say 0.05 gb or something like that are filtered out
-	- see if it improves the threshold. If yes lets find out an automatic way to find the threshold
 - try 3 different seeds and avg over them
 - try out some Preproccesors, they help to improve
 - use other models as well
-- data analysis: for most used tool: generate a graph filesize -> memory
-	- also look if there are differences of the data for different time periods (2020, 2021, 2022)
-	- memory usage vs time plot
 
 
 - maybe try to include the category of the tool for the prediction?
