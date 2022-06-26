@@ -2,22 +2,23 @@ Tool Resource Prediction for Genomic Datasets
 
 Question:
 - should I remove only values of train set or test set as well?
+- HPO: optimize R2 score or other value?: probably R2 score
 - could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
-- calc R2 value before --> then remove data points which lie outside of 2 standard deviations -> calc R2 again and compare
-	- should I remove only values of train set or test set as well?
-- Try XGB: https://xgboost.readthedocs.io/en/stable/python/python_api.html
-- Create a baseline: use assigned memory from the tool-configuration file
+- look how random forests work
+- prediction intervals only work if tree is big enough --> how big?
+- our task should be able to be given a percentage with which the tool should succeed given the output of our model. Try to find a way to include this
+	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)
+	- http://contrib.scikit-learn.org/forest-confidence-interval/index.html
+- do trainings and compare results with uncertainty and without
+- write report
 - Hyperparameter Optimization with scikit-learn
 	- Grid search
 	- Random search
 	- both with successive halving
-- our task should be able to be given a percentage with which the tool should succeed given the output of our model. Try to find a way to include this
-	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)
-	- http://contrib.scikit-learn.org/forest-confidence-interval/index.html
 - look into the code here to see how the data recording is done: https://github.com/usegalaxy-eu/galaxy/tree/release_22.01_europe/lib/galaxy
 - look here: https://bioblend.readthedocs.io/en/latest/api_docs/galaxy/all.html#module-bioblend.galaxy.jobs
 - try 3 different seeds and avg over them
@@ -41,6 +42,7 @@ TODO:
 
 
 DONE:
+- Create a baseline: use assigned memory from the tool-configuration file
 - what is the error for faulty_data compared to valid_data
 - ONLY USE SAME VERSION FOR TOOLS!
 	- make distinction between versions

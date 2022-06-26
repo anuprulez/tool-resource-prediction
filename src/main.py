@@ -46,29 +46,29 @@ if __name__ == '__main__':
     #                               specific_tool_number=tool_num)
 
     # specific = True
-    # specific = False
-    # if specific:
-    #     specific_run_config = {
-    #         "model_type": "rf",
-    #         "dataset_path": "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt",
-    #         "is_mixed_data": False,
-    #         "seed": 0,
-    #         "model_params": {
-    #             "n_estimators": 200,
-    #             "random_state": 0,
-    #             "criterion": "absolute_error"
-    #         }}
-    #     estimator.training_pipeline(run_configuration=specific_run_config, save=args.save)
-    # else:
-    #     with open("../run_configurations/remove_outliers1.yaml") as f:
-    #         run_configs = yaml.load(f, Loader=SafeLoader)
-    #     for key in tqdm(run_configs.keys()):
-    #         run_configuration = run_configs[key]
-    #         estimator.training_pipeline(run_configuration=run_configuration, save=args.save)
+    specific = False
+    if specific:
+        specific_run_config = {
+            "model_type": "rf",
+            "dataset_path": "../processed_data/most_memory_tools/rna_star/2.5.2b-1.txt",
+            "is_mixed_data": False,
+            "seed": 0,
+            "model_params": {
+                "n_estimators": 200,
+                "random_state": 0,
+                "criterion": "absolute_error"
+            }}
+        estimator.training_pipeline(run_configuration=specific_run_config, save=args.save)
+    else:
+        with open("../run_configurations/confidence1.yaml") as f:
+            run_configs = yaml.load(f, Loader=SafeLoader)
+        for key in tqdm(run_configs.keys()):
+            run_configuration = run_configs[key]
+            estimator.training_pipeline(run_configuration=run_configuration, save=args.save)
 
     # Baseline pipeline
-    with open("../run_configurations/remove_outliers1.yaml") as f:
-        run_configs = yaml.load(f, Loader=SafeLoader)
-    for key in tqdm(run_configs.keys()):
-        run_configuration = run_configs[key]
-        estimator.baseline_pipeline(run_configuration=run_configuration, save=args.save)
+    # with open("../run_configurations/remove_outliers1.yaml") as f:
+    #     run_configs = yaml.load(f, Loader=SafeLoader)
+    # for key in tqdm(run_configs.keys()):
+    #     run_configuration = run_configs[key]
+    #     estimator.baseline_pipeline(run_configuration=run_configuration, save=args.save)

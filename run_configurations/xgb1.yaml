@@ -1,8 +1,0 @@
-train1:
-  model_type: "xgb"
-  dataset_path: "../processed_data/sampled_data/snpSift_filter-4.3+t.galaxy1_20000_samples_seed_0.txt"
-  is_mixed_data: False
-  seed: 0
-  model_params:
-    n_estimators: 200
-    random_state: 0

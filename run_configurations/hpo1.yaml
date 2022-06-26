@@ -1,0 +1,17 @@
+train2:
+  model_type: "rf"
+  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
+    bootstrap: False
+train1:
+  model_type: "xgb"
+  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
+  is_mixed_data: False
+  seed: 0
+  model_params:
+    n_estimators: 200
+    random_state: 0
