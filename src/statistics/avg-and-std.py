@@ -16,7 +16,7 @@ def calc_avg_and_std(run_config):
     print("################")
 
 
-with open("../../run_configurations/top_10_tools.yaml") as f:
+with open("../../run_configurations/remove_outliers1.yaml") as f:
     run_configs = yaml.load(f, Loader=SafeLoader)
 for key in run_configs.keys():
     run_configuration = run_configs[key]

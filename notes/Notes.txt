@@ -1,14 +1,21 @@
 Tool Resource Prediction for Genomic Datasets
 
 Question:
-- should I remove only values of train set or test set as well?
-- HPO: optimize R2 score or other value?: probably R2 score
-- could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
+- next meeting on 14.07?
+- mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
-- look how random forests work
+- create a README file how to use everything
+	- share the repo
+- save the models as pickle files
+	--> dont use pickle files instead use ONNX
+- use also tools that are not used as much --> maybe at least 1000-2000
+- integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
+	- analysis is one model better for multiple tools or is a single model better?
+- show data in report: if we have good correlation -> our model works well
+					- show cases where correlation is not so good --> model is not so good
 - prediction intervals only work if tree is big enough --> how big?
 - our task should be able to be given a percentage with which the tool should succeed given the output of our model. Try to find a way to include this
 	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)

@@ -109,6 +109,10 @@ def write_training_results_to_file(y_pred, training_stats, X_train, X_test, X_te
     mean_squared_error = training_stats["mean_squared_error"]
     root_mean_squared_error = training_stats["root_mean_squared_error"]
     r2_score = training_stats["r2_score"]
+    mean_abs_error_with_uncertainty = training_stats["mean_abs_error_with_uncertainty"]
+    mean_squared_error_with_uncertainty = training_stats["mean_squared_error_with_uncertainty"]
+    root_mean_squared_error_with_uncertainty = training_stats["root_mean_squared_error_with_uncertainty"]
+    r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
     model_type = run_config["model_type"]
     model_params = training_stats["model_params"]
 
@@ -125,6 +129,10 @@ def write_training_results_to_file(y_pred, training_stats, X_train, X_test, X_te
         f.write(f"Mean squared error: {mean_squared_error}\n")
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write(f"R2 Score: {r2_score}\n")
+        f.write(f"Mean absolute error with uncertainty: {mean_abs_error_with_uncertainty}\n")
+        f.write(f"Mean squared error with uncertainty: {mean_squared_error_with_uncertainty}\n")
+        f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
+        f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
         f.write("############################\n")
         if is_mixed_data:
             f.write("Filesize, Prediction, Target, Create_time, Validity\n")
@@ -221,11 +229,25 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     print('Root Mean Squared Error:', root_mean_squared_error)
     print('R2 Score:', r2_score)
 
+    # With uncertainty
+    mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
+    mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
+    root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
+    r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
+    print('Mean Absolute Error:', mean_abs_error_with_uncertainty)
+    print('Mean Squared Error:', mean_squared_error_with_uncertainty)
+    print('Root Mean Squared Error:', root_mean_squared_error_with_uncertainty)
+    print('R2 Score:', r2_score_with_uncertainty)
+
     training_stats = {
         "mean_abs_error": mean_abs_error,
         "mean_squared_error": mean_squared_error,
         "root_mean_squared_error": root_mean_squared_error,
         "r2_score": r2_score,
+        "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
+        "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
+        "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
+        "r2_score_with_uncertainty": r2_score_with_uncertainty,
         "time_for_training_mins": time_for_training_mins,
         "feature_importances": feature_importances,
         "model_params": model_params
@@ -240,7 +262,7 @@ def training_pipeline(run_configuration, save: bool):
         "seed": run_configuration["seed"],
         "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration,
-        "remove_outliers": False
+        "remove_outliers": True
     }
     # Data loading
     X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)
@@ -266,7 +288,8 @@ def baseline_pipeline(run_configuration, save: bool):
         "do_scaling": True,
         "seed": run_configuration["seed"],
         "is_mixed_data": run_configuration["is_mixed_data"],
-        "run_config": run_configuration
+        "run_config": run_configuration,
+        "remove_outliers": False,
     }
     # Data loading
     X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)
@@ -280,6 +303,7 @@ def baseline_pipeline(run_configuration, save: bool):
         "tool_name": tool_name
     }
     method_params.pop("do_scaling")
+    method_params.pop("remove_outliers")
     calc_metrics_for_baseline(**train_and_test_data, **method_params)
 
 
@@ -324,6 +348,6 @@ def pred_with_uncertainty(model, X, percentile=95):
         prediction = decision_tree.predict(X)
         preds.append(prediction)
     preds = np.vstack(preds).T
-    err_up = np.percentile(preds, 100 - (100 - percentile) / 2., axis= 1, keepdims = True)
+    err_up = np.percentile(preds, 100 - (100 - percentile) / 2., axis=1, keepdims=True)
     err_up = err_up.reshape(-1, )
     return err_up
