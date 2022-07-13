@@ -12,8 +12,9 @@ np.set_printoptions(threshold=sys.maxsize)
 # It filters all jobs without file size or number of files and removes the columns job_id & state
 # The processed data (new_data) has form tool_id, file size, num_files, runtime_seconds, slots, memory_bytes, create_time
 def process_dataset(filename: str, number_rows=1000000, use_dict_tools=False):
-    # 39 because we have between 38 and 39 million entries
-    for i in range(39):
+    num_lines = sum(1 for line in open(filename))
+    range_for_file = num_lines // number_rows + 1
+    for i in range(range_for_file):
         # Filter out columns job_id, state
         original_data = np.loadtxt(filename, delimiter='|', skiprows=2 + i * number_rows, dtype=str,
                                    usecols=(1, 3, 4, 5, 6, 7, 8), max_rows=number_rows)
@@ -55,12 +56,14 @@ def process_dataset(filename: str, number_rows=1000000, use_dict_tools=False):
                 f.write("\n")
 
 
-def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool, distinction_between_tools=False):
+def find_most_used_tools(filename: str, save: bool, distinction_between_tools=True, rows_per_chunk=1000000):
     # Dictionary: toolname_without_version --> number of entries in dataset
     dict_tools = {}
 
     # range should be such that it is rounded up to number of rows of file
-    for i in range(26):
+    num_lines = sum(1 for line in open(filename))
+    range_for_file = num_lines // rows_per_chunk + 1
+    for i in range(range_for_file):
         # data has form tool_id, filesize, num_files, runtime_seconds, slots, memory_bytes, create_time
         data = np.loadtxt(filename, delimiter=',', skiprows=i * rows_per_chunk, dtype=str, max_rows=rows_per_chunk,
                           usecols=0)
@@ -146,13 +149,14 @@ def extract_entries_from_data(filename_dataset: str, filename_list_of_tools, num
                     f.write("\n")
 
 
-def remove_faulty_entries_from_data(filename_dataset: str, filename_tool_config: str, rows_per_chunk: int,
-                                    save_data: bool):
+def remove_faulty_entries_from_data(filename_dataset: str, filename_tool_config: str, rows_per_chunk=1000000):
     with open(filename_tool_config) as f:
         tool_configs = yaml.load(f, Loader=SafeLoader)
 
     # range should be such that it is rounded up to number of rows of file
-    for i in range(26):
+    num_lines = sum(1 for line in open(filename_dataset))
+    range_for_file = num_lines // rows_per_chunk + 1
+    for i in range(range_for_file):
         valid_data = []
         faulty_data = []
 
@@ -196,23 +200,22 @@ def remove_faulty_entries_from_data(filename_dataset: str, filename_tool_config:
                 else:
                     valid_data.append(entry)
 
-        if save_data:
-            with open('saved_data/valid_data.txt', 'a+') as f:
-                for entry in valid_data:
-                    for idx, data_feature in enumerate(entry):
-                        if idx != (len(entry) - 1):
-                            f.write("%s," % data_feature)
-                        else:
-                            f.write("%s" % data_feature)
-                    f.write("\n")
-            with open('saved_data/faulty_data.txt', 'a+') as f:
-                for entry in faulty_data:
-                    for idx, data_feature in enumerate(entry):
-                        if idx != (len(entry) - 1):
-                            f.write("%s," % data_feature)
-                        else:
-                            f.write("%s" % data_feature)
-                    f.write("\n")
+        with open('saved_data/valid_data.txt', 'a+') as f:
+            for entry in valid_data:
+                for idx, data_feature in enumerate(entry):
+                    if idx != (len(entry) - 1):
+                        f.write("%s," % data_feature)
+                    else:
+                        f.write("%s" % data_feature)
+                f.write("\n")
+        with open('saved_data/faulty_data.txt', 'a+') as f:
+            for entry in faulty_data:
+                for idx, data_feature in enumerate(entry):
+                    if idx != (len(entry) - 1):
+                        f.write("%s," % data_feature)
+                    else:
+                        f.write("%s" % data_feature)
+                f.write("\n")
 
 
 if __name__ == '__main__':
@@ -224,13 +227,32 @@ if __name__ == '__main__':
                              "'most_used': find the most used tools in the dataset "
                              " 'extract_entries': given a file with a list of tools, extract only the "
                              "rows from the dataset that are given in the list of tools "
-                             "'remove_faulty: remove entries in the data with faulty memory bytes")
-    parser.add_argument('dataset_path', metavar='dataset_path',
+                             "'remove_faulty: remove entries in the data with faulty memory bytes & create to distinct datasets (valid and faulty)")
+    parser.add_argument('--dataset_path',
                         help="The path to the dataset you want to apply the task on")
+    parser.add_argument('--tool_configuration_path',
+                        help="The path to the yaml file where the Galaxy tools are configured")
     args = parser.parse_args()
 
     if args.task == 'process_data':
         if args.dataset_path is None:
             parser.error("process_data requires --dataset_path")
-        # process_dataset('../Galaxy1-[jobs_runs_resources_23_05_22.csv].txt', 1000000, args.save)
         process_dataset(args.dataset_path)
+    if args.task == 'remove_faulty':
+        if args.dataset_path is None or args.tool_configuration_path is None:
+            parser.error("remove_faulty requires --dataset_path --tool_configuration_path")
+        remove_faulty_entries_from_data(filename_dataset=args.dataset_path,
+                                        filename_tool_config=args.tool_configuration_path)
+    if args.task == 'most_used':
+        if args.dataset_path is None:
+            parser.error("most_used requires --dataset_path")
+        find_most_used_tools(args.dataset_path)
+    if args.task == 'extract_entries':
+        extract_entries_from_data("../processed_data/dataset_stripped.txt",
+                                  "../processed_data/most_used_tools.txt",
+                                  number_tools=100,
+                                  rows_per_chunk=1000000,
+                                  rndm_seed=100,
+                                  sample_data=True,
+                                  number_samples_per_tool=150,
+                                  distinction_between_versions=False)

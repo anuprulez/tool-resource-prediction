@@ -5,11 +5,15 @@ Question:
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
+- finish: if args.task == 'extract_entries' fertig machen
 - method to load model from file and predict with it
 - create a README file how to use everything
+	- all scripts have to be run with working directory set to 'src'
+	- all files have to be txt files
+	- descripe script process_data
 	- inputs:
 		- what function do you want to do?
-			- 
+			- process_dataset
 		- remove_outliers
 		- probability to succeed
 	- make comments for functions that are not clear
