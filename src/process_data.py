@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import random
 import sys
@@ -8,9 +9,9 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 # This method is used to process the original raw dataset
-# It filters all jobs without file size or number of files and removes the columns job_id, state & create_time
-# The processed data (new_data) has form tool_id, file size, num_files, runtime_seconds, slots, memory_bytes
-def process_dataset(filename: str, number_rows: int, save_data: bool, use_dict_tools=False):
+# It filters all jobs without file size or number of files and removes the columns job_id & state
+# The processed data (new_data) has form tool_id, file size, num_files, runtime_seconds, slots, memory_bytes, create_time
+def process_dataset(filename: str, number_rows=1000000, use_dict_tools=False):
     # 39 because we have between 38 and 39 million entries
     for i in range(39):
         # Filter out columns job_id, state
@@ -42,17 +43,16 @@ def process_dataset(filename: str, number_rows: int, save_data: bool, use_dict_t
                     stripped[4] = stripped[4].replace(".0000000", "")
                     stripped[5] = stripped[5].replace(".0000000", "")
                     new_data.append(stripped)
-        if save_data:
-            # Write all entries to a file
-            with open('saved_data/dataset_stripped.txt', 'a+') as f:
-                for entry in new_data:
-                    for idx, data_feature in enumerate(entry):
-                        # No comma if last element
-                        if idx != (len(entry) - 1):
-                            f.write("%s," % data_feature)
-                        else:
-                            f.write("%s" % data_feature)
-                    f.write("\n")
+        # Write all entries to a file
+        with open('saved_data/dataset_stripped.txt', 'a+') as f:
+            for entry in new_data:
+                for idx, data_feature in enumerate(entry):
+                    # No comma if last element
+                    if idx != (len(entry) - 1):
+                        f.write("%s," % data_feature)
+                    else:
+                        f.write("%s" % data_feature)
+                f.write("\n")
 
 
 def find_most_used_tools(filename: str, rows_per_chunk: int, save: bool, distinction_between_tools=False):
@@ -213,3 +213,24 @@ def remove_faulty_entries_from_data(filename_dataset: str, filename_tool_config:
                         else:
                             f.write("%s" % data_feature)
                     f.write("\n")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="This script allows you to process the dataset in various forms")
+    parser.add_argument('task', metavar='task',
+                        choices=['process_data', 'most_used', 'extract_entries', 'remove_faulty'],
+                        help="Choose one of the following tasks you want to execute: "
+                             "'process_data': process the original raw dataset "
+                             "'most_used': find the most used tools in the dataset "
+                             " 'extract_entries': given a file with a list of tools, extract only the "
+                             "rows from the dataset that are given in the list of tools "
+                             "'remove_faulty: remove entries in the data with faulty memory bytes")
+    parser.add_argument('dataset_path', metavar='dataset_path',
+                        help="The path to the dataset you want to apply the task on")
+    args = parser.parse_args()
+
+    if args.task == 'process_data':
+        if args.dataset_path is None:
+            parser.error("process_data requires --dataset_path")
+        # process_dataset('../Galaxy1-[jobs_runs_resources_23_05_22.csv].txt', 1000000, args.save)
+        process_dataset(args.dataset_path)

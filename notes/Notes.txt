@@ -1,16 +1,23 @@
 Tool Resource Prediction for Genomic Datasets
 
 Question:
-- next meeting on 14.07?
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
-
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
+- method to load model from file and predict with it
 - create a README file how to use everything
+	- inputs:
+		- what function do you want to do?
+			- 
+		- remove_outliers
+		- probability to succeed
+	- make comments for functions that are not clear
+	- describe where the data and in which form it is saved
+	- describe what format the inputs should be
+	- describe the different scripts
+	- arg parse everything
 	- share the repo
-- save the models as pickle files
-	--> dont use pickle files instead use ONNX
 - use also tools that are not used as much --> maybe at least 1000-2000
 - integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
 	- analysis is one model better for multiple tools or is a single model better?
