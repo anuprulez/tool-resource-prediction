@@ -67,6 +67,7 @@ def load_data(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_conf
     y_test = y_test.astype('float64')
 
     if remove_outliers:
+        print("Outliers get removed.")
         # Find entries that are outside of mean +- 2*std
         upper_threshold = np.mean(y) + 2 * np.std(y)
         lower_threshold = np.mean(y) - 2 * np.std(y)
@@ -78,6 +79,8 @@ def load_data(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_conf
         nr_samples_outside = len(remove_indices_train[0])
         percentage_within = 1 - (nr_samples_outside / len(y_train))
         print(f"Percentage data within mean +- 2 * std: {percentage_within}")
+    else:
+        print("Outliers are not removed.")
 
     if doStandardScale:
         sc = StandardScaler()
@@ -291,13 +294,13 @@ def load_model_and_predict(filepath, input_data):
     pred_onx = sess.run([label_name], {input_name: input_data.astype(numpy.float32)})
 
 
-def training_pipeline(run_configuration, save: bool):
+def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
     method_params = {
         "do_scaling": True,
         "seed": run_configuration["seed"],
         "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration,
-        "remove_outliers": True
+        "remove_outliers": remove_outliers
     }
     # Data loading
     X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)
@@ -320,13 +323,13 @@ def training_pipeline(run_configuration, save: bool):
         save_model_as_onnx(regressor, train_and_test_data, run_configuration)
 
 
-def baseline_pipeline(run_configuration):
+def baseline_pipeline(run_configuration, remove_outliers: bool):
     method_params = {
         "do_scaling": True,
         "seed": run_configuration["seed"],
         "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration,
-        "remove_outliers": False,
+        "remove_outliers": remove_outliers,
     }
     # Data loading
     X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)

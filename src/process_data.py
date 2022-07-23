@@ -232,27 +232,54 @@ if __name__ == '__main__':
                         help="The path to the dataset you want to apply the task on")
     parser.add_argument('--tool_configuration_path',
                         help="The path to the yaml file where the Galaxy tools are configured")
+    parser.add_argument('--tool_list_path',
+                        help="The path to the file where a list of tools are given")
+    parser.add_argument('--num_tools',
+                        help="The number of tools from the given tool list for which the entries should be extracted from the dataset")
+    parser.add_argument('--seed',
+                        help="Seed for sampling entries out of the dataset for a specific tool")
+    parser.add_argument('--nr_samples',
+                        help="Number of samples that should be extracted per tool")
+    parser.add_argument('--tool_id',
+                        help="The tool_id (0-based) from the given tool list for which entries should be extracted")
     args = parser.parse_args()
 
     if args.task == 'process_data':
         if args.dataset_path is None:
             parser.error("process_data requires --dataset_path")
         process_dataset(args.dataset_path)
+
     if args.task == 'remove_faulty':
         if args.dataset_path is None or args.tool_configuration_path is None:
             parser.error("remove_faulty requires --dataset_path --tool_configuration_path")
         remove_faulty_entries_from_data(filename_dataset=args.dataset_path,
                                         filename_tool_config=args.tool_configuration_path)
+
     if args.task == 'most_used':
         if args.dataset_path is None:
             parser.error("most_used requires --dataset_path")
         find_most_used_tools(args.dataset_path)
+
     if args.task == 'extract_entries':
-        extract_entries_from_data("../processed_data/dataset_stripped.txt",
-                                  "../processed_data/most_used_tools.txt",
-                                  number_tools=100,
-                                  rows_per_chunk=1000000,
-                                  rndm_seed=100,
-                                  sample_data=True,
-                                  number_samples_per_tool=150,
-                                  distinction_between_versions=False)
+        if args.dataset_path is None:
+            parser.error("extract_entries requires --dataset_path")
+        if args.tool_list_path is None:
+            parser.error("extract_entries requires --tool_list_path")
+        if args.num_tools is None:
+            parser.error("extract_entries requires --num_tools")
+        if args.seed is None:
+            parser.error("extract_entries requires --seed")
+        if args.nr_samples is None:
+            parser.error("extract_entries requires --nr_samples")
+
+        method_params = {
+            'number_tools': args.num_tools,
+            'rows_per_chunk': 1000000,
+            'rndm_seed': args.seed,
+            'sample_data': True,
+            'number_samples_per_tool': args.nr_samples,
+            'distinction_between_versions': True
+        }
+        if args.tool_id is not None:
+            method_params['specific_tool_numer'] = args.tool_id
+        extract_entries_from_data(args.dataset_path, args.tool_list_path, **method_params)

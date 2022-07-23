@@ -5,11 +5,17 @@ Question:
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
-- finish: if args.task == 'extract_entries' fertig machen
-- method to load model from file and predict with it
+- imlementation: load model and run on dataset
+	- need to implement prediction with uncertainty as well
+- description: how to load a model and run on data
+- first chapter: motivation
+- which kind of requirements is neccessary?
+	- requirements file: requirements
+- include samples files with maybe 500 samples
+- why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would bek overkill
+	--> something for the future?
+- try to find similar work. State of the art approaches
 - create a README file how to use everything
-	- all scripts have to be run with working directory set to 'src'
-	- all files have to be txt files
 	- descripe script process_data
 	- inputs:
 		- what function do you want to do?
@@ -17,7 +23,8 @@ TODO:
 		- remove_outliers
 		- probability to succeed
 	- make comments for functions that are not clear
-	- describe where the data and in which form it is saved
+	- describe where the data is saved and in which form it is saved
+	- describe where and which format the model is saved
 	- describe what format the inputs should be
 	- describe the different scripts
 	- arg parse everything
