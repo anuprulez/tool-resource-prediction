@@ -1,5 +1,7 @@
 # Tool Resource Prediction for Genomic Datasets
 
+The original dataset taken from Galaxy can be found here: https://usegalaxy.eu/u/kumara/h/tool-resources
+
 ## Requirements
 Python 3.9 was used
 
@@ -16,13 +18,14 @@ Python 3.9 was used
   - (optional) --baseline: run the galaxy baseline on the given data ()
   - (optional) --remove_outliers: set to remove outliers from the data. Outliers are data points outside of mean +- 2 * standard deviation
 ```
+The model predicts the memory bytes in GB
 
-## Run configuration file
+### Run configuration file
 - The run configuration file has to be a yaml-file inside the "run_configurations" folder
 - In this file you can define multiple trainings that will be run sequentially in the given order
 - The file must have the following format:
 ```yaml
-  <arbitrary unique name>:
+<arbitrary unique name>:
   model_type: <"xgb" for Extra Gradient Boosting or "rf" for Random Forest
   dataset_path: <path to the dataset used for the training>
   is_mixed_data: False
@@ -31,7 +34,7 @@ Python 3.9 was used
       <parameters for the model you want to use>
 ```
 
-### Example run configuration (yaml-file)
+#### Example run configuration (yaml-file)
 
 ```yaml
 train1:
@@ -53,19 +56,19 @@ train2:
       bootstrap: False
 ```
 
-## Format of the dataset
+### Format of the dataset
 The data used for the training, baseline or evaluation has to be in the following format (seperated by commas):
 ```
 Tool_id, Filesize, Number_of_files, Slots, Memory_bytes, Create_time
 ```
 
-## Saved data
+### Saved data
 By setting "--save" when running the "main.py" the training results and the trained model will be saved.
 The trained model is hereby saved as an ONNX-file to the "saved_models" directory inside the "src" folder.
 The training results are saved to the "saved_data" directory inside the "src" folder. 
 
 The training results hereby have the following format:
-```
+```yaml
 Tool name: ...
 Dataset_path: ...
 Is_mixed_data: ...
@@ -77,13 +80,16 @@ Mean absolute error: ...
 Mean squared error: ...
 Root mean squared error: ...
 R2 Score: ...
-<if model type was Random Forest the following metrics are also given>
-Mean absolute error with uncertainty: 161.10533273756087
-Mean squared error with uncertainty: 71876.79254177918
-Root mean squared error with uncertainty: 268.09847545590253
-R2 Score with uncertainty: 0.08260334804878877
+<if model type was Random Forest and a probability was given as parameter the following metrics are also given>
+Mean absolute error with uncertainty: ...
+Mean squared error with uncertainty: ...
+Root mean squared error with uncertainty: ...
+R2 Score with uncertainty: ...
 ############################
 Filesize, Prediction, Target, Create_time
 ############################
-<here all the data points from the test set are listed with Filesize, Prediction, Target, Create_time> 
+<here all the data points from the test set are listed with Filesize (GB), Prediction (GB), Target (GB), Create_time> 
 ```
+
+## How to load a model and evaluate on data
+

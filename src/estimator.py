@@ -4,8 +4,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 import xgboost as xgb
-import onnxruntime as rt
+import onnxruntime as onnx_rt
 import onnxmltools
+import onnx
 
 # Models
 from sklearn.ensemble import RandomForestRegressor
@@ -23,8 +24,8 @@ from yaml import SafeLoader
 from typing import Union
 
 
-def load_data(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None,
-              doStandardScale=False, remove_outliers=False):
+def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None,
+                           doStandardScale=False, remove_outliers=False):
     if is_mixed_data:
         column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
     else:
@@ -162,6 +163,60 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
                 f.write("\n")
 
 
+def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None):
+    mean_abs_error = evaluation_stats["mean_abs_error"]
+    mean_squared_error = evaluation_stats["mean_squared_error"]
+    root_mean_squared_error = evaluation_stats["root_mean_squared_error"]
+    r2_score = evaluation_stats["r2_score"]
+    model_type = run_config["model_type"]
+    # TODO: find out if this is possible
+    # if model_type == "rf":
+    #     mean_abs_error_with_uncertainty = training_stats["mean_abs_error_with_uncertainty"]
+    #     mean_squared_error_with_uncertainty = training_stats["mean_squared_error_with_uncertainty"]
+    #     root_mean_squared_error_with_uncertainty = training_stats["root_mean_squared_error_with_uncertainty"]
+    #     r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
+
+    filename_str = f"saved_data/evaluation_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    with open(filename_str, 'a+') as f:
+        f.write(f"Tool name: {tool_name}\n")
+        f.write(f"Dataset_path: {run_config['dataset_path']}\n")
+        f.write(f"Is_mixed_data: {is_mixed_data}\n")
+        f.write(f"Mean absolute error: {mean_abs_error}\n")
+        f.write(f"Mean squared error: {mean_squared_error}\n")
+        f.write(f"Root mean squared error: {root_mean_squared_error}\n")
+        f.write(f"R2 Score: {r2_score}\n")
+        # TODO: find out if this is possible
+        # # With uncertainty
+        # # Only supported for RF
+        # if model_type == "rf":
+        #     f.write(f"Mean absolute error with uncertainty: {mean_abs_error_with_uncertainty}\n")
+        #     f.write(f"Mean squared error with uncertainty: {mean_squared_error_with_uncertainty}\n")
+        #     f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
+        #     f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
+        f.write("############################\n")
+        if is_mixed_data:
+            f.write("Filesize, Prediction, Target, Create_time, Validity\n")
+            f.write("############################\n")
+            for idx, entry in enumerate(X_test_orig):
+                filesize = X_test[idx][0]
+                validity = entry[-1]
+                prediction = y_pred[idx]
+                target = y_test[idx]
+                create_time = entry[-1]
+                f.write(f"{filesize},{prediction},{target},{create_time},{validity}")
+                f.write("\n")
+        else:
+            f.write("Filesize, Prediction, Target, Create_time\n")
+            f.write("############################\n")
+            for idx, entry in enumerate(X_test_orig):
+                filesize = X_test[idx][0]
+                prediction = y_pred[idx]
+                target = y_test[idx]
+                create_time = entry[-1]
+                f.write(f"{filesize},{prediction},{target},{create_time}")
+                f.write("\n")
+
+
 def fit_model(X_train, y_train, hyper_param_opt, run_config):
     start_time = time.time()
 
@@ -278,20 +333,61 @@ def save_model_as_onnx(regressor, train_and_test_data, run_config):
     ]
     if model_type == "xgb":
         onnx_model = onnxmltools.convert_xgboost(regressor, initial_types=initial_types,
-                                                 name='XGB Regressor Tool Resource Prediction')
+                                                 name='XGB Regressor')
     if model_type == "rf":
         onnx_model = onnxmltools.convert_sklearn(regressor, initial_types=initial_types,
-                                                 name='Random Forest Regressor Tool Resource Prediction')
+                                                 name='Random Forest')
 
     filename_str = f"saved_models/model_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.onnx"
     onnxmltools.save_model(onnx_model, filename_str)
 
 
-def load_model_and_predict(filepath, input_data):
-    sess = rt.InferenceSession(filepath)
+def load_model_and_predict(model_path, X_test, X_orig, y_test, tool_name):
+    sess = onnx_rt.InferenceSession(model_path)
     input_name = sess.get_inputs()[0].name
     label_name = sess.get_outputs()[0].name
-    pred_onx = sess.run([label_name], {input_name: input_data.astype(numpy.float32)})
+    y_pred = sess.run([label_name], {input_name: X_test.astype(numpy.float32)})[0]
+
+    mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
+    mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
+    root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
+    r2_score = metrics.r2_score(y_test, y_pred)
+    print('Mean Absolute Error:', mean_abs_error)
+    print('Mean Squared Error:', mean_squared_error)
+    print('Root Mean Squared Error:', root_mean_squared_error)
+    print('R2 Score:', r2_score)
+
+    evaluation_stats = {
+        "mean_abs_error": mean_abs_error,
+        "mean_squared_error": mean_squared_error,
+        "root_mean_squared_error": root_mean_squared_error,
+        "r2_score": r2_score
+    }
+
+    # With uncertainty
+    # only supported for RF
+    # TODO: find out how to do this for ONNX model
+    # if sess.get_modelmeta().graph_name == "Random Forest":
+    #     y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, 90)
+    #
+    #     mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
+    #     mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
+    #     root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
+    #     r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
+    #     print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
+    #     print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
+    #     print('Root Mean Squared Error with uncertainty:', root_mean_squared_error_with_uncertainty)
+    #     print('R2 Score with uncertainty:', r2_score_with_uncertainty)
+    #
+    #     training_stats_uncertainty = {
+    #         "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
+    #         "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
+    #         "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
+    #         "r2_score_with_uncertainty": r2_score_with_uncertainty
+    #     }
+    #     training_stats.update(training_stats_uncertainty)
+    #
+    return y_pred, y_test, evaluation_stats
 
 
 def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
@@ -303,7 +399,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         "remove_outliers": remove_outliers
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
@@ -332,7 +428,7 @@ def baseline_pipeline(run_configuration, remove_outliers: bool):
         "remove_outliers": remove_outliers,
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = load_data(**method_params)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
@@ -345,6 +441,74 @@ def baseline_pipeline(run_configuration, remove_outliers: bool):
     method_params.pop("do_scaling")
     method_params.pop("remove_outliers")
     calc_metrics_for_baseline(**train_and_test_data, **method_params)
+
+
+def evaluate_model_pipeline(run_configuration, model_path, save):
+    method_params = {
+        "do_scaling": True,
+        "is_mixed_data": run_configuration["is_mixed_data"],
+        "run_config": run_configuration
+    }
+    # Data loading
+    X_test_orig, X_test, y_test, tool_name = load_data(**method_params)
+    data = {
+        "X_test": X_test,
+        "X_test_orig": X_test_orig,
+        "y_test": y_test,
+        "tool_name": tool_name
+    }
+    # Remove unnecessary params for the next steps
+    method_params.pop("do_scaling")
+
+    y_pred, y_test, evaluation_stats = load_model_and_predict(model_path, **data)
+    if save:
+        # TODO: finish this
+        save_evaluation_results(y_pred, evaluation_stats, **method_params, **data)
+
+
+def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
+    if is_mixed_data:
+        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
+    else:
+        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+
+    dataset_path = run_config["dataset_path"]
+    data = pd.read_csv(dataset_path, sep=',', names=column_names)
+
+    # Extract tool name
+    tool_name = data["Tool_id"][0]
+    start_idx = 0
+    idx = tool_name.rfind('/')
+    if idx != -1:
+        start_idx = tool_name[0:idx].rfind('/') + 1
+    tool_name = tool_name[start_idx:]
+
+    if is_mixed_data:
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time", "Validity"]
+    else:
+        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
+    X_orig = data[relevant_columns_x].values
+    if is_mixed_data:
+        X_orig[:, 0:-2] = X_orig[:, 0:-2].astype('float64')
+    else:
+        X_orig[:, 0:-1] = X_orig[:, 0:-1].astype('float64')
+
+    X_test = X_orig[:, 0:-1]
+    y_test = data["Memory_bytes"].values
+    y_test = y_test.astype('float64')
+
+    if do_scaling:
+        # scale with GB
+        scaling = 1000000000
+        # Scale bytes of filesize
+        X_orig[:, 0] /= scaling
+        # Scale bytes of memory bytes
+        y_test /= scaling
+
+    # X_test is data without Create_time
+    # X_orig is data with Create_time
+    # y is Memory_bytes
+    return X_orig, X_test, y_test, tool_name
 
 
 def calc_metrics_for_baseline(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, seed: int,

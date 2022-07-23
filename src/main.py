@@ -12,15 +12,17 @@ if __name__ == '__main__':
     parser.add_argument("--save",
                         action=argparse.BooleanOptionalAction,
                         default=False,
-                        help="set to save training results and the fitted model (default: false). Not possible for baseline.")
+                        help="Set to save training/test results and the fitted model (default: false). Not possible for baseline.")
     parser.add_argument("--baseline",
                         action=argparse.BooleanOptionalAction,
                         default=False,
-                        help="set to evaluate the baseline on the run configuration (default: false). The baseline is given by the tool destination file from galaxy.")
+                        help="Set to evaluate the baseline on the run configuration (default: false). The baseline is given by the tool destination file from galaxy.")
     parser.add_argument("--remove_outliers",
                         action=argparse.BooleanOptionalAction,
                         default=False,
-                        help="set to remove outliers from the data (default: false). This means data outside of mean +- 2 * standard deviation gets removed")
+                        help="Set to remove outliers from the data (default: false). This means data outside of mean +- 2 * standard deviation gets removed")
+    parser.add_argument('--model',
+                        help="The path to the model (ONNX-file) you want to load and predict on")
     args = parser.parse_args()
 
     # process_dataset('../Galaxy1-[jobs_runs_resources_23_05_22.csv].txt', 1000000, args.save)
@@ -82,5 +84,7 @@ if __name__ == '__main__':
         if args.baseline:
             # Baseline pipeline
             estimator.baseline_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers)
+        elif args.model:
+            estimator.evaluate_model_pipeline(run_configuration=run_configuration, model_path=args.model, save=args.save)
         else:
             estimator.training_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers, save=args.save)
