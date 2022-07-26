@@ -5,29 +5,21 @@ Question:
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
+- give example scripts to run:
+	- baseline script
+	- evaluation script
+	- train script
+- create a README file how to use everything
+	- share the repo
 - where to continue: evaluation pipeline "#TODO: finish this" & load_model_and_predict at uncertainty part
 	- search for TODOs and remove them when finished
 - imlementation: load model and run on dataset
 	- need to implement prediction with uncertainty as well --> problem: ONNX model not convertible to sklearn model
-	- after eval the results need to be saved as well
-	- test it
-- description: how to load a model and run on data
-	- need run config again
 - first chapter: motivation
-- which kind of requirements is neccessary?
-	- requirements file: requirements
 - include samples files with maybe 500 samples
 - why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would bek overkill
 	--> something for the future?
 - try to find similar work. State of the art approaches
-- create a README file how to use everything
-	- descripe script process_data
-	- inputs:
-		- what function do you want to do?
-			- process_dataset
-		- probability to succeed
-	- make comments for functions that are not clear
-	- share the repo
 - use also tools that are not used as much --> maybe at least 1000-2000
 - integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
 	- analysis is one model better for multiple tools or is a single model better?
@@ -38,7 +30,6 @@ TODO:
 	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)
 	- http://contrib.scikit-learn.org/forest-confidence-interval/index.html
 - do trainings and compare results with uncertainty and without
-- write report
 - Hyperparameter Optimization with scikit-learn
 	- Grid search
 	- Random search
@@ -48,6 +39,9 @@ TODO:
 - try 3 different seeds and avg over them
 - try out some Preproccesors, they help to improve
 - use other models as well
+
+Report:
+- What does model predict? Memory in GB
 
 
 - maybe try to include the category of the tool for the prediction?
@@ -87,11 +81,11 @@ Infos:
 - write report 20-30 pages
 - ZOOM Link: https://uni-freiburg.zoom.us/j/64335242368?pwd=YmpURjd3Q1YwWHgwYW5Eb2hLeVB6QT09
 - bw cloud: https://portal.bw-cloud.org/
-- Dataset: https://usegalaxy.eu/u/kumara/h/tool-resources
+- New dataset: https://usegalaxy.eu/u/kumara/h/tool-resources
 - Tool Configurations: https://github.com/usegalaxy-eu/infrastructure-playbook/blob/master/files/galaxy/dynamic_rules/usegalaxy/tool_destinations.yaml
 - Chat: https://app.element.io/#/welcome
 	- @anupkumar:matrix.org
-- Handling bis csv Files: https://www.gigasheet.co/
+- Handling big csv Files: https://www.gigasheet.co/ or better https://csviewer.com/
 - Old Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
 
 group tools that have different version or make a distinction between them?

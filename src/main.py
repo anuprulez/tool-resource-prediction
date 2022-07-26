@@ -81,10 +81,14 @@ if __name__ == '__main__':
         run_configs = yaml.load(f, Loader=SafeLoader)
     for key in tqdm(run_configs.keys()):
         run_configuration = run_configs[key]
+        print("Following run config is used: ")
+        print(run_configuration)
         if args.baseline:
-            # Baseline pipeline
-            estimator.baseline_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers)
+            print("Run baseline...")
+            estimator.baseline_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers, save=args.save)
         elif args.model:
+            print("Evaluate given model...")
             estimator.evaluate_model_pipeline(run_configuration=run_configuration, model_path=args.model, save=args.save)
         else:
+            print("Train model...")
             estimator.training_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers, save=args.save)

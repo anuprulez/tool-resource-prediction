@@ -32,6 +32,7 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
         column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
 
     dataset_path = run_config["dataset_path"]
+    print(f"Get train and test set from path {dataset_path} ...")
     data = pd.read_csv(dataset_path, sep=',', names=column_names)
 
     # Extract tool name
@@ -120,6 +121,7 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
         r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
 
     filename_str = f"saved_data/training_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    print(f"Save training results to file {filename_str}")
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {run_config['dataset_path']}\n")
@@ -163,7 +165,7 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
                 f.write("\n")
 
 
-def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None):
+def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None, isBaseline=False):
     mean_abs_error = evaluation_stats["mean_abs_error"]
     mean_squared_error = evaluation_stats["mean_squared_error"]
     root_mean_squared_error = evaluation_stats["root_mean_squared_error"]
@@ -176,7 +178,11 @@ def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_tes
     #     root_mean_squared_error_with_uncertainty = training_stats["root_mean_squared_error_with_uncertainty"]
     #     r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
 
-    filename_str = f"saved_data/evaluation_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    str_eval_or_baseline = "evaluation"
+    if isBaseline:
+        str_eval_or_baseline = "baseline"
+    filename_str = f"saved_data/{str_eval_or_baseline}_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    print(f"Save {str_eval_or_baseline} results to file {filename_str}")
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {run_config['dataset_path']}\n")
@@ -221,7 +227,7 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
     start_time = time.time()
 
     if run_config["model_type"] == "rf":
-        # TODO: try out some of these params
+        print("Fit Random Forest...")
         # criterion='absolute_error', bootstrap=False, warm_start=True
         regressor = RandomForestRegressor(**run_config["model_params"], verbose=2)
         if hyper_param_opt:
@@ -234,6 +240,7 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
             regressor.fit(X_train, y_train)
 
     if run_config["model_type"] == "xgb":
+        print("Fit XGB model...")
         xgb.set_config(verbosity=2)
 
         # TODO: maybe try XGB RF Regressor
@@ -276,8 +283,9 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     print("Time taken in minutes for training:", time_for_training_mins)
 
     feature_importances = regressor.feature_importances_
-    print("Feature importance:", feature_importances)
+    print("Feature importances:", feature_importances)
 
+    print("Predict...")
     y_pred = regressor.predict(X_test)
 
     mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
@@ -302,6 +310,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     # With uncertainty
     # only supported for RF
     if run_config["model_type"] == "rf":
+        print("Predict with uncertainty...")
         y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, 90)
 
         mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
@@ -339,10 +348,13 @@ def save_model_as_onnx(regressor, train_and_test_data, run_config):
                                                  name='Random Forest')
 
     filename_str = f"saved_models/model_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.onnx"
+    print(f"Save model to file {filename_str}")
     onnxmltools.save_model(onnx_model, filename_str)
 
 
-def load_model_and_predict(model_path, X_test, X_orig, y_test, tool_name):
+def load_model_and_predict(model_path, X_test, X_test_orig, y_test, tool_name):
+    print(f"Load model from path {model_path}")
+    print("Predict...")
     sess = onnx_rt.InferenceSession(model_path)
     input_name = sess.get_inputs()[0].name
     label_name = sess.get_outputs()[0].name
@@ -419,7 +431,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         save_model_as_onnx(regressor, train_and_test_data, run_configuration)
 
 
-def baseline_pipeline(run_configuration, remove_outliers: bool):
+def baseline_pipeline(run_configuration, remove_outliers: bool, save: bool):
     method_params = {
         "do_scaling": True,
         "seed": run_configuration["seed"],
@@ -440,7 +452,10 @@ def baseline_pipeline(run_configuration, remove_outliers: bool):
     }
     method_params.pop("do_scaling")
     method_params.pop("remove_outliers")
-    calc_metrics_for_baseline(**train_and_test_data, **method_params)
+    method_params.pop("seed")
+    y_pred, y_test, baseline_stats = calc_metrics_for_baseline(**train_and_test_data, **method_params)
+    if save:
+        save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params, isBaseline=True)
 
 
 def evaluate_model_pipeline(run_configuration, model_path, save):
@@ -462,7 +477,6 @@ def evaluate_model_pipeline(run_configuration, model_path, save):
 
     y_pred, y_test, evaluation_stats = load_model_and_predict(model_path, **data)
     if save:
-        # TODO: finish this
         save_evaluation_results(y_pred, evaluation_stats, **method_params, **data)
 
 
@@ -473,6 +487,8 @@ def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
         column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
 
     dataset_path = run_config["dataset_path"]
+    print(f"Load data from path {dataset_path} ...")
+
     data = pd.read_csv(dataset_path, sep=',', names=column_names)
 
     # Extract tool name
@@ -511,8 +527,9 @@ def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
     return X_orig, X_test, y_test, tool_name
 
 
-def calc_metrics_for_baseline(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, seed: int,
+def calc_metrics_for_baseline(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name,
                               is_mixed_data: bool = False, run_config=None, doStandardScale=True):
+    print("Calculate metrics for the baseline...")
     with open("../processed_data/tool_destinations.yaml") as f:
         tool_configs = yaml.load(f, Loader=SafeLoader)
 
@@ -538,11 +555,20 @@ def calc_metrics_for_baseline(X_train, X_test, X_test_orig, X_test_unscaled, y_t
     root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
     r2_score = metrics.r2_score(y_test, y_pred)
     print("Tool name", tool_name)
-    print("y_pred:", y_pred_constant)
+    print("y_pred assigned by Galaxy:", y_pred_constant)
     print('Mean Absolute Error:', mean_abs_error)
     print('Mean Squared Error:', mean_squared_error)
     print('Root Mean Squared Error:', root_mean_squared_error)
     print('R2 Score:', r2_score)
+
+    baseline_stats = {
+        "mean_abs_error": mean_abs_error,
+        "mean_squared_error": mean_squared_error,
+        "root_mean_squared_error": root_mean_squared_error,
+        "r2_score": r2_score
+    }
+
+    return y_pred, y_test, baseline_stats
 
 
 # Code taken from http://blog.datadive.net/prediction-intervals-for-random-forests/

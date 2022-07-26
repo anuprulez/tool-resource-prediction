@@ -3,20 +3,38 @@
 The original dataset taken from Galaxy can be found here: https://usegalaxy.eu/u/kumara/h/tool-resources
 
 ## Requirements
-Python 3.9 was used
+Python 3.9 was used. Install the necessary packages by using the [environment file](environment.yml).
 
 ## How to use
 
 - All scripts have to be run with working directory set to "src" directory
 - All the data files have to be .txt files except the files for running trainings and the tool configuration file from galaxy. These have to be .yaml files
 
+## Example scripts
+
+### Run baseline on trinity/2.9.1 dataset
+```
+python main.py ../run_configurations/specific.yaml --baseline --save
+```
+
+### Train model on trinity/2.9.1 dataset
+```
+python main.py ../run_configurations/specific.yaml --save
+```
+
+### Evaluate an existing model on trinity/2.9.1 dataset
+```
+python main.py ../run_configurations/specific.yaml --model=saved_models/model_rf_trinity-2.9.1_2022_07_23-06_19_45_PM.onnx --save
+```
+
 ## How to train a model:
 - run "main.py" in the "src" folder with following parameters:
 ```
   - first parameter: path to the run configuration file
-  - (optional) --save: save the training results and the trained model to a file
-  - (optional) --baseline: run the galaxy baseline on the given data ()
-  - (optional) --remove_outliers: set to remove outliers from the data. Outliers are data points outside of mean +- 2 * standard deviation
+  - (optional) --save: save the training results and the trained model to a file (default: false)
+  - (optional) --baseline: run the galaxy baseline on the given data (default: false)
+  - (optional) --remove_outliers: set to remove outliers from the data (default: false). This only works for the training and not evaluation.
+    Outliers are data points outside of mean +- 2 * standard deviation
 ```
 The model predicts the memory bytes in GB
 
@@ -91,5 +109,12 @@ Filesize, Prediction, Target, Create_time
 <here all the data points from the test set are listed with Filesize (GB), Prediction (GB), Target (GB), Create_time> 
 ```
 
-## How to load a model and evaluate on data
+## How to load a model and evaluate on given data
 
+- run "main.py" in the "src" folder with following parameters:
+```
+  - first parameter: path to the run configuration file. The run configuration file has to be in the same format as mentioned above
+  - (optional) --save: save the evaluation results to a file (default: false)
+  - (optional) --model: The path to the model (ONNX-file) you want to load and predict with
+```
+The model predicts the memory bytes in GB
