@@ -4,6 +4,6 @@ train1:
   is_mixed_data: False
   seed: 0
   model_params:
-    n_estimators: 20
+    n_estimators: 100
     random_state: 0
     min_samples_leaf: 1

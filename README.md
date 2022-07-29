@@ -3,7 +3,11 @@
 The original dataset taken from Galaxy can be found here: https://usegalaxy.eu/u/kumara/h/tool-resources
 
 ## Requirements
-Python 3.9 was used. Install the necessary packages by using the [environment file](environment.yml).
+Python 3.9 was used.
+Install the necessary packages by using the [requirements file](requirements.txt).
+```
+pip install -r requirements.txt
+```
 
 ## How to use
 

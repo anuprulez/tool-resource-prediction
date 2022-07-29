@@ -5,19 +5,13 @@ Question:
 - what does the job record? The maximum memory usage of a tool
 
 TODO:
-- give example scripts to run:
-	- baseline script
-	- evaluation script
-	- train script
-- create a README file how to use everything
-	- share the repo
-- where to continue: evaluation pipeline "#TODO: finish this" & load_model_and_predict at uncertainty part
-	- search for TODOs and remove them when finished
-- imlementation: load model and run on dataset
+- add percentage for uncertainty to arguments
+- implementation: load model and run on dataset
 	- need to implement prediction with uncertainty as well --> problem: ONNX model not convertible to sklearn model
+		--> idea: if file ends with onnx not uncertainty available, if pickle then uncertainty is available
+- search for TODOs and remove them when finished
 - first chapter: motivation
-- include samples files with maybe 500 samples
-- why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would bek overkill
+- why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would be overkill
 	--> something for the future?
 - try to find similar work. State of the art approaches
 - use also tools that are not used as much --> maybe at least 1000-2000
@@ -39,9 +33,6 @@ TODO:
 - try 3 different seeds and avg over them
 - try out some Preproccesors, they help to improve
 - use other models as well
-
-Report:
-- What does model predict? Memory in GB
 
 
 - maybe try to include the category of the tool for the prediction?
@@ -90,6 +81,11 @@ Infos:
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out
+
+example reports:
+http://www.bioinf.uni-freiburg.de/Lehre/Theses/P_Ralf_Krauth_Report_Project.pdf
+http://www.bioinf.uni-freiburg.de/Lehre/Theses/MA_Ralf_Krauth.pdf
+
 
 papers:
 https://ris.uni-paderborn.de/download/16219/16220/ris_preprint.pdf
