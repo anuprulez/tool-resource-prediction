@@ -4,7 +4,21 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 - what does the job record? The maximum memory usage of a tool
 
+Anup is away from 30.08 to 05.09
+
+
 TODO:
+- save train and test data while training
+	- mention this in readme
+- either leave Is_mixed_data out or explain it
+	- if leave out then remove all occasions of Is_mixed_data
+- save and load model with pickle. Still leave onnx methods
+	- write this into readme and report
+- cross validation?
+- test the dataset from Anup: compare if dataset is better or worse
+- put in README how CSViewer can be used
+- create CSV File which lists pearson correlation for all tools
+- add link to report in README
 - add percentage for uncertainty to arguments
 - implementation: load model and run on dataset
 	- need to implement prediction with uncertainty as well --> problem: ONNX model not convertible to sklearn model
@@ -70,6 +84,7 @@ Questions:
 
 Infos:
 - write report 20-30 pages
+- presentation: 15-20 mins
 - ZOOM Link: https://uni-freiburg.zoom.us/j/64335242368?pwd=YmpURjd3Q1YwWHgwYW5Eb2hLeVB6QT09
 - bw cloud: https://portal.bw-cloud.org/
 - New dataset: https://usegalaxy.eu/u/kumara/h/tool-resources
@@ -81,6 +96,10 @@ Infos:
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out
+
+
+older paper about runtime prediction for Galaxy:
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
 
 example reports:
 http://www.bioinf.uni-freiburg.de/Lehre/Theses/P_Ralf_Krauth_Report_Project.pdf

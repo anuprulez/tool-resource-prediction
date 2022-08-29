@@ -81,7 +81,7 @@ train2:
 ### Format of the dataset
 The data used for the training, baseline or evaluation has to be in the following format (seperated by commas):
 ```
-Tool_id, Filesize, Number_of_files, Slots, Memory_bytes, Create_time
+Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), Create_time
 ```
 
 ### Saved data

@@ -1,8 +1,10 @@
 import numpy
+from matplotlib import pyplot as plt
 from onnxconverter_common import FloatTensorType
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
+from sklearn import tree
 import xgboost as xgb
 import onnxruntime as onnx_rt
 import onnxmltools
@@ -24,8 +26,43 @@ from yaml import SafeLoader
 from typing import Union
 
 
+def save_train_and_test_data(tool_name, X_train, X_test, y_train, y_test):
+    # Format for saving: Tool_id, Filesize, Number_of_files, Slots, Memory_bytes, Create_time
+    # Format X_train: Filesize, Number_of_files, Slots, Create_time
+
+    date_string = str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))
+    filename_str_train = f"saved_data/trainset_{tool_name.replace('/', '-')}_{date_string}.txt"
+    print(f"Save train set to file {filename_str_train}...")
+    with open(filename_str_train, 'a+') as f:
+        for idx, entry in enumerate(X_train):
+            f.write(f"{tool_name},")
+            tmp = entry[0:3]
+            tmp2 = ','.join((str(v) for v in tmp))
+            # write Filesize, Number_of_files, Slots
+            f.write(f"{tmp2},")
+            # write Memory_bytes
+            f.write(f"{y_train[idx]},")
+            # write Create_time
+            f.write(f"{entry[-1]}")
+            f.write("\n")
+
+    filename_str_test = f"saved_data/testset_{tool_name.replace('/', '-')}_{date_string}.txt"
+    print(f"Save test set to file {filename_str_test}...")
+    with open(filename_str_test, 'a+') as f:
+        for idx, entry in enumerate(X_test):
+            f.write(f"{tool_name},")
+            tmp = entry[0:3]
+            tmp2 = ','.join((str(v) for v in tmp))
+            # write Filesize, Number_of_files, Slots
+            f.write(f"{tmp2},")
+            # write Memory_bytes
+            f.write(f"{y_test[idx]},")
+            # write Create_time
+            f.write(f"{entry[-1]}")
+            f.write("\n")
+
 def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None,
-                           doStandardScale=False, remove_outliers=False):
+                           doStandardScale=False, remove_outliers=False, save=False):
     if is_mixed_data:
         column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
     else:
@@ -100,6 +137,30 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
         X_train = X_train_orig[:, 0:-1]
         X_test = X_test_orig[:, 0:-1]
         X_test_unscaled = X_test
+
+    if save:
+        X_train_to_save = X_train_orig
+        # Scale back to bytes
+        X_train_to_save[:, 0] = X_train_to_save[:, 0] * scaling
+        X_train_to_save[:, 0] = [round(entry) for entry in X_train_to_save[:, 0]]
+
+        X_test_to_save = X_test_orig
+        # Scale back to bytes
+        X_test_to_save[:, 0] = X_test_to_save[:, 0] * scaling
+        X_test_to_save[:, 0] = [round(entry) for entry in X_test_to_save[:, 0]]
+
+        y_train_to_save = [round(entry) for entry in (y_train * scaling)]
+        y_test_to_save = [round(entry) for entry in (y_test * scaling)]
+
+        train_and_test_data_to_save = {
+            "tool_name": tool_name,
+            "X_train": X_train_to_save,
+            "X_test": X_test_to_save,
+            "y_train": y_train_to_save,
+            "y_test": y_test_to_save
+        }
+        save_train_and_test_data(**train_and_test_data_to_save)
+
     return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name
 
 
@@ -120,7 +181,7 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
         root_mean_squared_error_with_uncertainty = training_stats["root_mean_squared_error_with_uncertainty"]
         r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
 
-    filename_str = f"saved_data/training_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    filename_str = f"saved_data/training_results_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
     print(f"Save training results to file {filename_str}")
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
@@ -181,7 +242,7 @@ def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_tes
     str_eval_or_baseline = "evaluation"
     if isBaseline:
         str_eval_or_baseline = "baseline"
-    filename_str = f"saved_data/{str_eval_or_baseline}_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
+    filename_str = f"saved_data/{str_eval_or_baseline}_results_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.txt"
     print(f"Save {str_eval_or_baseline} results to file {filename_str}")
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
@@ -273,6 +334,9 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
 
     regressor, time_for_training_mins = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=False,
                                                   run_config=run_config)
+
+    # tree.plot_tree(regressor.estimators_[0], feature_names=["Filesize", "Number_of_files", "Slots"], rounded=True)
+    # plt.show()
 
     regressor_params = regressor.get_params()
     relevant_params = {"n_estimators", "random_state", "criterion", "max_depth", "learning_rate", "bootstrap",
@@ -411,7 +475,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         "remove_outliers": remove_outliers
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
@@ -440,7 +504,7 @@ def baseline_pipeline(run_configuration, remove_outliers: bool, save: bool):
         "remove_outliers": remove_outliers,
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
