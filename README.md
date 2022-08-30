@@ -47,6 +47,7 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
   dataset_path: <path to the dataset that you want to use for training/evaluation/baseline>
   is_mixed_data: False
   seed: <seed for splitting data into training and test set in case of training>
+  probability_uncertainty (optional): probability used for uncertainty prediction in range [0,1]
   model_params:
       <parameters for the model you want to use>
 ```

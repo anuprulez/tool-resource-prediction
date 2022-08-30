@@ -4,6 +4,7 @@ train1:
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
   is_mixed_data: False
   seed: 0
+  probability_uncertainty: 0.9
   model_params:
     n_estimators: 100
     random_state: 0

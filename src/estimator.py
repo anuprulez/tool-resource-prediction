@@ -373,26 +373,30 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
 
     # With uncertainty
     # only supported for RF
-    if run_config["model_type"] == "rf":
-        print("Predict with uncertainty...")
-        y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, 90)
+    if run_config["model_type"] == "rf" and "probability_uncertainty" in run_config:
+        probability_uncertainty = run_config["probability_uncertainty"]
+        if probability_uncertainty >= 0 and probability_uncertainty <= 1:
+            print("Predict with uncertainty...")
+            y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, probability_uncertainty)
 
-        mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
-        mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
-        root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
-        r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
-        print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
-        print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
-        print('Root Mean Squared Error with uncertainty:', root_mean_squared_error_with_uncertainty)
-        print('R2 Score with uncertainty:', r2_score_with_uncertainty)
+            mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
+            mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
+            root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
+            r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
+            print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
+            print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
+            print('Root Mean Squared Error with uncertainty:', root_mean_squared_error_with_uncertainty)
+            print('R2 Score with uncertainty:', r2_score_with_uncertainty)
 
-        training_stats_uncertainty = {
-            "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
-            "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
-            "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
-            "r2_score_with_uncertainty": r2_score_with_uncertainty
-        }
-        training_stats.update(training_stats_uncertainty)
+            training_stats_uncertainty = {
+                "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
+                "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
+                "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
+                "r2_score_with_uncertainty": r2_score_with_uncertainty
+            }
+            training_stats.update(training_stats_uncertainty)
+        else:
+            print(f"Value for probability_uncertainty has to be in range [0, 1]!. Instead value {probability_uncertainty} was given")
 
     return y_pred, y_test, training_stats, regressor
 
@@ -658,7 +662,8 @@ def calc_metrics_for_baseline(X_test, X_test_orig, y_test, tool_name, is_mixed_d
 
 
 # Code taken from http://blog.datadive.net/prediction-intervals-for-random-forests/
-def pred_with_uncertainty(model, X, percentile=95):
+def pred_with_uncertainty(model, X, percentile=0.95):
+    percentile *= 100
     preds = []
     for decision_tree in model.estimators_:
         prediction = decision_tree.predict(X)

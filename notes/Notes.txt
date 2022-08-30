@@ -8,11 +8,12 @@ Anup is away from 30.08 to 05.09
 
 
 TODO:
-- include probability as parameter for uncertainty prediction
 - either leave Is_mixed_data out or explain it
 	- if leave out then remove all occasions of Is_mixed_data
 - save and load model with pickle. Still leave onnx methods
+	- use probability_uncertainty from run_config file
 	- write this into readme and report
+- write into readme and report that for training/evaluation prediction can be done with uncertainty
 - cross validation?
 - test the dataset from Anup: compare if dataset is better or worse
 - put in README how CSViewer can be used
