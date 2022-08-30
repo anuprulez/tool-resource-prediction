@@ -8,8 +8,11 @@ Anup is away from 30.08 to 05.09
 
 
 TODO:
+- baseline pipeline has to be modified
+	- change readme accordingly (add how to run baseline in readme)
 - save train and test data while training
 	- mention this in readme
+- include probability as parameter for uncertainty prediction
 - either leave Is_mixed_data out or explain it
 	- if leave out then remove all occasions of Is_mixed_data
 - save and load model with pickle. Still leave onnx methods

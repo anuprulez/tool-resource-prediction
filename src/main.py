@@ -85,7 +85,7 @@ if __name__ == '__main__':
         print(run_configuration)
         if args.baseline:
             print("Run baseline...")
-            estimator.baseline_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers, save=args.save)
+            estimator.baseline_pipeline(run_configuration=run_configuration, save=args.save)
         elif args.model:
             print("Evaluate given model...")
             estimator.evaluate_model_pipeline(run_configuration=run_configuration, model_path=args.model, save=args.save)

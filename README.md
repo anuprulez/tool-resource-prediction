@@ -121,4 +121,7 @@ Filesize, Prediction, Target, Create_time
   - (optional) --save: save the evaluation results to a file (default: false)
   - (optional) --model: The path to the model (ONNX-file) you want to load and predict with
 ```
+
+Don't forget to set the "dataset_path" to the actual data you want to use for evaluation.
+
 The model predicts the memory bytes in GB

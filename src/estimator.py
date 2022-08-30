@@ -134,17 +134,17 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
 
         X_test_unscaled = sc.inverse_transform(X_test)
     else:
-        X_train = X_train_orig[:, 0:-1]
-        X_test = X_test_orig[:, 0:-1]
-        X_test_unscaled = X_test
+        X_train = X_train_orig[:, 0:-1].copy()
+        X_test = X_test_orig[:, 0:-1].copy()
+        X_test_unscaled = X_test.copy()
 
     if save:
-        X_train_to_save = X_train_orig
+        X_train_to_save = X_train_orig.copy()
         # Scale back to bytes
         X_train_to_save[:, 0] = X_train_to_save[:, 0] * scaling
         X_train_to_save[:, 0] = [round(entry) for entry in X_train_to_save[:, 0]]
 
-        X_test_to_save = X_test_orig
+        X_test_to_save = X_test_orig.copy()
         # Scale back to bytes
         X_test_to_save[:, 0] = X_test_to_save[:, 0] * scaling
         X_test_to_save[:, 0] = [round(entry) for entry in X_test_to_save[:, 0]]
@@ -422,7 +422,7 @@ def load_model_and_predict(model_path, X_test, X_test_orig, y_test, tool_name):
     sess = onnx_rt.InferenceSession(model_path)
     input_name = sess.get_inputs()[0].name
     label_name = sess.get_outputs()[0].name
-    y_pred = sess.run([label_name], {input_name: X_test.astype(numpy.float32)})[0]
+    y_pred = sess.run([label_name], {input_name: X_test.astype(numpy.float32)})[0].flatten()
 
     mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
     mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
@@ -495,31 +495,53 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         save_model_as_onnx(regressor, train_and_test_data, run_configuration)
 
 
-def baseline_pipeline(run_configuration, remove_outliers: bool, save: bool):
+def baseline_pipeline(run_configuration, save: bool):
     method_params = {
         "do_scaling": True,
-        "seed": run_configuration["seed"],
         "is_mixed_data": run_configuration["is_mixed_data"],
-        "run_config": run_configuration,
-        "remove_outliers": remove_outliers,
+        "run_config": run_configuration
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
-    train_and_test_data = {
-        "X_train": X_train,
+    X_test_orig, X_test, y_test, tool_name = load_data(**method_params)
+    data = {
         "X_test": X_test,
         "X_test_orig": X_test_orig,
-        "X_test_unscaled": X_test_unscaled,
-        "y_train": y_train,
         "y_test": y_test,
         "tool_name": tool_name
     }
+    # Remove unnecessary params for the next steps
     method_params.pop("do_scaling")
-    method_params.pop("remove_outliers")
-    method_params.pop("seed")
-    y_pred, y_test, baseline_stats = calc_metrics_for_baseline(**train_and_test_data, **method_params)
+
+    # y_pred, y_test, evaluation_stats = load_model_and_predict(model_path, **data)
+    y_pred, y_test, baseline_stats = calc_metrics_for_baseline(**data, **method_params)
     if save:
-        save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params, isBaseline=True)
+        # save_evaluation_results(y_pred, evaluation_stats, **method_params, **data)
+        save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params,
+                                isBaseline=True)
+    # method_params = {
+    #     "do_scaling": True,
+    #     "seed": run_configuration["seed"],
+    #     "is_mixed_data": run_configuration["is_mixed_data"],
+    #     "run_config": run_configuration,
+    #     "remove_outliers": remove_outliers,
+    # }
+    # # Data loading
+    # X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
+    # train_and_test_data = {
+    #     "X_train": X_train,
+    #     "X_test": X_test,
+    #     "X_test_orig": X_test_orig,
+    #     "X_test_unscaled": X_test_unscaled,
+    #     "y_train": y_train,
+    #     "y_test": y_test,
+    #     "tool_name": tool_name
+    # }
+    # method_params.pop("do_scaling")
+    # method_params.pop("remove_outliers")
+    # method_params.pop("seed")
+    # y_pred, y_test, baseline_stats = calc_metrics_for_baseline(**train_and_test_data, **method_params)
+    # if save:
+    #     save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params, isBaseline=True)
 
 
 def evaluate_model_pipeline(run_configuration, model_path, save):
@@ -591,8 +613,8 @@ def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
     return X_orig, X_test, y_test, tool_name
 
 
-def calc_metrics_for_baseline(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name,
-                              is_mixed_data: bool = False, run_config=None, doStandardScale=True):
+def calc_metrics_for_baseline(X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None,
+                              doStandardScale=True):
     print("Calculate metrics for the baseline...")
     with open("../processed_data/tool_destinations.yaml") as f:
         tool_configs = yaml.load(f, Loader=SafeLoader)
