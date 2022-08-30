@@ -18,45 +18,40 @@ pip install -r requirements.txt
 
 ### Run baseline on trinity/2.9.1 dataset
 ```
-python main.py ../run_configurations/specific.yaml --baseline --save
+python main.py ../run_configurations/example_run_config.yaml --baseline --save
 ```
 
 ### Train model on trinity/2.9.1 dataset
 ```
-python main.py ../run_configurations/specific.yaml --save
+python main.py ../run_configurations/example_run_config.yaml --save
 ```
 
 ### Evaluate an existing model on trinity/2.9.1 dataset
 ```
-python main.py ../run_configurations/specific.yaml --model=saved_models/model_rf_trinity-2.9.1_2022_07_23-06_19_45_PM.onnx --save
+python main.py ../run_configurations/example_run_config.yaml --model=saved_models/model_rf_trinity-2.9.1_2022_08_30-02_45_03_PM.onnx --save
 ```
 
-## How to train a model:
-- run "main.py" in the "src" folder with following parameters:
+## Format of the dataset
+The data used for the training, baseline or evaluation has to be in the following format (seperated by commas):
 ```
-  - first parameter: path to the run configuration file
-  - (optional) --save: save the training results and the trained model to a file (default: false)
-  - (optional) --baseline: run the galaxy baseline on the given data (default: false)
-  - (optional) --remove_outliers: set to remove outliers from the data (default: false). This only works for the training and not evaluation.
-    Outliers are data points outside of mean +- 2 * standard deviation
+Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), Create_time
 ```
-The model predicts the memory bytes in GB
 
-### Run configuration file
+## Run configuration file
 - The run configuration file has to be a yaml-file inside the "run_configurations" folder
 - In this file you can define multiple trainings that will be run sequentially in the given order
 - The file must have the following format:
 ```yaml
 <arbitrary unique name>:
   model_type: <"xgb" for Extra Gradient Boosting or "rf" for Random Forest
-  dataset_path: <path to the dataset used for the training>
+  dataset_path: <path to the dataset that you want to use for training/evaluation/baseline>
   is_mixed_data: False
-  seed: <seed for splitting data into training and test set>
+  seed: <seed for splitting data into training and test set in case of training>
   model_params:
       <parameters for the model you want to use>
 ```
 
-#### Example run configuration (yaml-file)
+### Example run configuration (yaml-file)
 
 ```yaml
 train1:
@@ -78,16 +73,20 @@ train2:
       bootstrap: False
 ```
 
-### Format of the dataset
-The data used for the training, baseline or evaluation has to be in the following format (seperated by commas):
+## How to train a model:
+- run "main.py" in the "src" folder with following parameters:
 ```
-Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), Create_time
+  - first parameter: path to the run configuration file
+  - (optional) --save: save the training results and the trained model to a file (default: false)
+  - (optional) --remove_outliers: set to remove outliers from the data (default: false). This only works for the training and not evaluation.
+    Outliers are data points outside of mean +- 2 * standard deviation
 ```
+The model predicts the memory bytes in GB
 
 ### Saved data
-By setting "--save" when running the "main.py" the training results and the trained model will be saved.
+By setting "--save" when running the "main.py" the training results, train set, test set and the trained model will be saved in distinct files.
 The trained model is hereby saved as an ONNX-file to the "saved_models" directory inside the "src" folder.
-The training results are saved to the "saved_data" directory inside the "src" folder. 
+The training results, train set & test set are saved to the "saved_data" directory inside the "src" folder. 
 
 The training results hereby have the following format:
 ```yaml
@@ -122,6 +121,17 @@ Filesize, Prediction, Target, Create_time
   - (optional) --model: The path to the model (ONNX-file) you want to load and predict with
 ```
 
-Don't forget to set the "dataset_path" to the actual data you want to use for evaluation.
+Don't forget to set the "dataset_path" in the run configuration file to the actual data you want to use for evaluation.
 
 The model predicts the memory bytes in GB
+
+## How to run the Galaxy baseline on given data
+
+- run "main.py" in the "src" folder with following parameters:
+```
+  - first parameter: path to the run configuration file. The run configuration file has to be in the same format as mentioned above
+  - (optional) --save: save the baseline results to a file (default: false)
+  - (optional) --baseline: flag that the baseline should run on the data
+```
+
+Don't forget to set the "dataset_path" in the run configuration file to the actual data you want to use for evaluation.
