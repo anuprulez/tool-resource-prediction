@@ -1,7 +1,6 @@
 # First do some basic training with same params for every tool of top-10
 train1:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -9,7 +8,6 @@ train1:
     criterion: "absolute_error"
 train2:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_1_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -17,7 +15,6 @@ train2:
     criterion: "absolute_error"
 train3:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_2_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -25,7 +22,6 @@ train3:
     criterion: "absolute_error"
 train4:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_3_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -33,7 +29,6 @@ train4:
     criterion: "absolute_error"
 train5:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_4_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -41,7 +36,6 @@ train5:
     criterion: "absolute_error"
 train6:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_5_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -49,7 +43,6 @@ train6:
     criterion: "absolute_error"
 train7:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_6_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -57,7 +50,6 @@ train7:
     criterion: "absolute_error"
 train8:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_7_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -65,7 +57,6 @@ train8:
     criterion: "absolute_error"
 train9:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_8_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -73,7 +64,6 @@ train9:
     criterion: "absolute_error"
 train10:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_9_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -83,7 +73,6 @@ train10:
 # Try some other params for tool 0
 train11:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -91,7 +80,6 @@ train11:
     criterion: "poisson"
 train12:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -100,7 +88,6 @@ train12:
     bootstrap: False
 train13:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 500
@@ -108,7 +95,6 @@ train13:
     criterion: "absolute_error"
 train14:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -117,7 +103,6 @@ train14:
     warm_start: True
 train15:
   dataset_path: "../processed_data/sampled_data/20000_samples_of_tool_number_0_seed_100.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200

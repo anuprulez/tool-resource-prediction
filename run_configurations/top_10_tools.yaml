@@ -1,7 +1,6 @@
 # basic training with same params for every tool of top-10
 train1:
   dataset_path: "../processed_data/sampled_data/snpSift_filter-4.3+t.galaxy1_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -9,7 +8,6 @@ train1:
     criterion: "absolute_error"
 train2:
   dataset_path: "../processed_data/sampled_data/Add_a_column1-1.6_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -17,7 +15,6 @@ train2:
     criterion: "absolute_error"
 train3:
   dataset_path: "../processed_data/sampled_data/tp_find_and_replace-1.1.3_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -25,7 +22,6 @@ train3:
     criterion: "absolute_error"
 train4:
   dataset_path: "../processed_data/sampled_data/Cut1_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -33,7 +29,6 @@ train4:
     criterion: "absolute_error"
 train5:
   dataset_path: "../processed_data/sampled_data/lofreq_call-2.1.5+galaxy0_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -41,7 +36,6 @@ train5:
     criterion: "absolute_error"
 train6:
   dataset_path: "../processed_data/sampled_data/snpSift_extractFields-4.3+t.galaxy0_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -49,7 +43,6 @@ train6:
     criterion: "absolute_error"
 train7:
   dataset_path: "../processed_data/sampled_data/vcfvcfintersect-1.0.0_rc3+galaxy0_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -57,7 +50,6 @@ train7:
     criterion: "absolute_error"
 train8:
   dataset_path: "../processed_data/sampled_data/lofreq_filter-2.1.5+galaxy0_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -65,7 +57,6 @@ train8:
     criterion: "absolute_error"
 train9:
   dataset_path: "../processed_data/sampled_data/fastp-0.20.1+galaxy0_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -73,7 +64,6 @@ train9:
     criterion: "absolute_error"
 train10:
   dataset_path: "../processed_data/sampled_data/bwa_mem-0.7.17.1_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200

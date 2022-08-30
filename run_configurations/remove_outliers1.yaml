@@ -1,7 +1,6 @@
 train1:
   model_type: "rf"
   dataset_path: "../processed_data/sampled_data/snpSift_filter-4.3+t.galaxy1_20000_samples_seed_0.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -10,7 +9,6 @@ train1:
 train2:
   model_type: "rf"
   dataset_path: "../processed_data/most_memory_tools/rna_star/2.5.2b-1.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -19,7 +17,6 @@ train2:
 train3:
   model_type: "rf"
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200

@@ -61,12 +61,11 @@ def save_train_and_test_data(tool_name, X_train, X_test, y_train, y_test):
             f.write(f"{entry[-1]}")
             f.write("\n")
 
-def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = False, run_config=None,
-                           doStandardScale=False, remove_outliers=False, save=False):
-    if is_mixed_data:
-        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
-    else:
-        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+
+def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, doStandardScale=False, remove_outliers=False,
+                           save=False):
+
+    column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
 
     dataset_path = run_config["dataset_path"]
     print(f"Get train and test set from path {dataset_path} ...")
@@ -80,15 +79,9 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
         start_idx = tool_name[0:idx].rfind('/') + 1
     tool_name = tool_name[start_idx:]
 
-    if is_mixed_data:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time", "Validity"]
-    else:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
+    relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
     X = data[relevant_columns_x].values
-    if is_mixed_data:
-        X[:, 0:-2] = X[:, 0:-2].astype('float64')
-    else:
-        X[:, 0:-1] = X[:, 0:-1].astype('float64')
+    X[:, 0:-1] = X[:, 0:-1].astype('float64')
 
     y = data["Memory_bytes"].values
     y = y.astype('float64')
@@ -123,15 +116,9 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
 
     if doStandardScale:
         sc = StandardScaler()
-        if is_mixed_data:
-            # Scale all columns beside 'Validity' & 'Create_time
-            X_train = sc.fit_transform(X_train_orig[:, 0:-2])
-            X_test = sc.transform(X_test_orig[:, 0:-2])
-        else:
-            # Scale all columns beside 'Create_time
-            X_train = sc.fit_transform(X_train_orig[:, 0:-1])
-            X_test = sc.transform(X_test_orig[:, 0:-1])
-
+        # Scale all columns beside 'Create_time
+        X_train = sc.fit_transform(X_train_orig[:, 0:-1])
+        X_test = sc.transform(X_test_orig[:, 0:-1])
         X_test_unscaled = sc.inverse_transform(X_test)
     else:
         X_train = X_train_orig[:, 0:-1].copy()
@@ -165,8 +152,7 @@ def get_train_and_test_set(do_scaling: bool, seed: int, is_mixed_data: bool = Fa
 
 
 def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, X_test_unscaled, y_train,
-                          y_test, tool_name, seed: int,
-                          is_mixed_data: bool = False, run_config=None):
+                          y_test, tool_name, seed: int, run_config=None):
     time_for_training_mins = training_stats["time_for_training_mins"]
     feature_importances = training_stats["feature_importances"]
     mean_abs_error = training_stats["mean_abs_error"]
@@ -186,7 +172,6 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {run_config['dataset_path']}\n")
-        f.write(f"Is_mixed_data: {is_mixed_data}\n")
         f.write(f"Seed: {seed}\n")
         f.write(f"Model_params: {json.dumps(model_params)}\n")
         f.write(f"Time for training in mins: {time_for_training_mins}\n")
@@ -203,30 +188,18 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
             f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
             f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
         f.write("############################\n")
-        if is_mixed_data:
-            f.write("Filesize, Prediction, Target, Create_time, Validity\n")
-            f.write("############################\n")
-            for idx, entry in enumerate(X_test_orig):
-                filesize = X_test_unscaled[idx][0]
-                validity = entry[-1]
-                prediction = y_pred[idx]
-                target = y_test[idx]
-                create_time = entry[-1]
-                f.write(f"{filesize},{prediction},{target},{create_time},{validity}")
-                f.write("\n")
-        else:
-            f.write("Filesize, Prediction, Target, Create_time\n")
-            f.write("############################\n")
-            for idx, entry in enumerate(X_test_orig):
-                filesize = X_test_unscaled[idx][0]
-                prediction = y_pred[idx]
-                target = y_test[idx]
-                create_time = entry[-1]
-                f.write(f"{filesize},{prediction},{target},{create_time}")
-                f.write("\n")
+        f.write("Filesize, Prediction, Target, Create_time\n")
+        f.write("############################\n")
+        for idx, entry in enumerate(X_test_orig):
+            filesize = X_test_unscaled[idx][0]
+            prediction = y_pred[idx]
+            target = y_test[idx]
+            create_time = entry[-1]
+            f.write(f"{filesize},{prediction},{target},{create_time}")
+            f.write("\n")
 
 
-def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None, isBaseline=False):
+def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_test, tool_name, run_config=None, isBaseline=False):
     mean_abs_error = evaluation_stats["mean_abs_error"]
     mean_squared_error = evaluation_stats["mean_squared_error"]
     root_mean_squared_error = evaluation_stats["root_mean_squared_error"]
@@ -247,7 +220,6 @@ def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_tes
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
         f.write(f"Dataset_path: {run_config['dataset_path']}\n")
-        f.write(f"Is_mixed_data: {is_mixed_data}\n")
         f.write(f"Mean absolute error: {mean_abs_error}\n")
         f.write(f"Mean squared error: {mean_squared_error}\n")
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
@@ -261,27 +233,15 @@ def save_evaluation_results(y_pred, evaluation_stats, X_test, X_test_orig, y_tes
         #     f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
         #     f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
         f.write("############################\n")
-        if is_mixed_data:
-            f.write("Filesize, Prediction, Target, Create_time, Validity\n")
-            f.write("############################\n")
-            for idx, entry in enumerate(X_test_orig):
-                filesize = X_test[idx][0]
-                validity = entry[-1]
-                prediction = y_pred[idx]
-                target = y_test[idx]
-                create_time = entry[-1]
-                f.write(f"{filesize},{prediction},{target},{create_time},{validity}")
-                f.write("\n")
-        else:
-            f.write("Filesize, Prediction, Target, Create_time\n")
-            f.write("############################\n")
-            for idx, entry in enumerate(X_test_orig):
-                filesize = X_test[idx][0]
-                prediction = y_pred[idx]
-                target = y_test[idx]
-                create_time = entry[-1]
-                f.write(f"{filesize},{prediction},{target},{create_time}")
-                f.write("\n")
+        f.write("Filesize, Prediction, Target, Create_time\n")
+        f.write("############################\n")
+        for idx, entry in enumerate(X_test_orig):
+            filesize = X_test[idx][0]
+            prediction = y_pred[idx]
+            target = y_test[idx]
+            create_time = entry[-1]
+            f.write(f"{filesize},{prediction},{target},{create_time}")
+            f.write("\n")
 
 
 def fit_model(X_train, y_train, hyper_param_opt, run_config):
@@ -323,8 +283,7 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
     return regressor, time_for_training_mins
 
 
-def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, seed: int,
-                      is_mixed_data: bool = False, run_config=None) \
+def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, seed: int, run_config=None) \
         -> tuple[np.ndarray, np.ndarray, dict, Union[RandomForestRegressor, XGBRegressor]]:
     """
     Returns:
@@ -381,7 +340,8 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
 
             mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
             mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
-            root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
+            root_mean_squared_error_with_uncertainty = np.sqrt(
+                metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
             r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
             print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
             print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
@@ -396,7 +356,8 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
             }
             training_stats.update(training_stats_uncertainty)
         else:
-            print(f"Value for probability_uncertainty has to be in range [0, 1]!. Instead value {probability_uncertainty} was given")
+            print(
+                f"Value for probability_uncertainty has to be in range [0, 1]!. Instead value {probability_uncertainty} was given")
 
     return y_pred, y_test, training_stats, regressor
 
@@ -474,12 +435,12 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
     method_params = {
         "do_scaling": True,
         "seed": run_configuration["seed"],
-        "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration,
         "remove_outliers": remove_outliers
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params,
+                                                                                                       save=save)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
@@ -502,7 +463,6 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
 def baseline_pipeline(run_configuration, save: bool):
     method_params = {
         "do_scaling": True,
-        "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration
     }
     # Data loading
@@ -522,36 +482,11 @@ def baseline_pipeline(run_configuration, save: bool):
         # save_evaluation_results(y_pred, evaluation_stats, **method_params, **data)
         save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params,
                                 isBaseline=True)
-    # method_params = {
-    #     "do_scaling": True,
-    #     "seed": run_configuration["seed"],
-    #     "is_mixed_data": run_configuration["is_mixed_data"],
-    #     "run_config": run_configuration,
-    #     "remove_outliers": remove_outliers,
-    # }
-    # # Data loading
-    # X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name = get_train_and_test_set(**method_params, save=save)
-    # train_and_test_data = {
-    #     "X_train": X_train,
-    #     "X_test": X_test,
-    #     "X_test_orig": X_test_orig,
-    #     "X_test_unscaled": X_test_unscaled,
-    #     "y_train": y_train,
-    #     "y_test": y_test,
-    #     "tool_name": tool_name
-    # }
-    # method_params.pop("do_scaling")
-    # method_params.pop("remove_outliers")
-    # method_params.pop("seed")
-    # y_pred, y_test, baseline_stats = calc_metrics_for_baseline(**train_and_test_data, **method_params)
-    # if save:
-    #     save_evaluation_results(y_pred, baseline_stats, X_test, X_test_orig, y_test, tool_name, **method_params, isBaseline=True)
 
 
 def evaluate_model_pipeline(run_configuration, model_path, save):
     method_params = {
         "do_scaling": True,
-        "is_mixed_data": run_configuration["is_mixed_data"],
         "run_config": run_configuration
     }
     # Data loading
@@ -570,15 +505,11 @@ def evaluate_model_pipeline(run_configuration, model_path, save):
         save_evaluation_results(y_pred, evaluation_stats, **method_params, **data)
 
 
-def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
-    if is_mixed_data:
-        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time", "Validity"]
-    else:
-        column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+def load_data(do_scaling: bool, run_config=None):
 
+    column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
     dataset_path = run_config["dataset_path"]
     print(f"Load data from path {dataset_path} ...")
-
     data = pd.read_csv(dataset_path, sep=',', names=column_names)
 
     # Extract tool name
@@ -589,15 +520,9 @@ def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
         start_idx = tool_name[0:idx].rfind('/') + 1
     tool_name = tool_name[start_idx:]
 
-    if is_mixed_data:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time", "Validity"]
-    else:
-        relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
+    relevant_columns_x = ["Filesize", "Number_of_files", "Slots", "Create_time"]
     X_orig = data[relevant_columns_x].values
-    if is_mixed_data:
-        X_orig[:, 0:-2] = X_orig[:, 0:-2].astype('float64')
-    else:
-        X_orig[:, 0:-1] = X_orig[:, 0:-1].astype('float64')
+    X_orig[:, 0:-1] = X_orig[:, 0:-1].astype('float64')
 
     X_test = X_orig[:, 0:-1]
     y_test = data["Memory_bytes"].values
@@ -617,7 +542,7 @@ def load_data(do_scaling: bool, is_mixed_data: bool = False, run_config=None):
     return X_orig, X_test, y_test, tool_name
 
 
-def calc_metrics_for_baseline(X_test, X_test_orig, y_test, tool_name, is_mixed_data: bool = False, run_config=None,
+def calc_metrics_for_baseline(X_test, X_test_orig, y_test, tool_name, run_config=None,
                               doStandardScale=True):
     print("Calculate metrics for the baseline...")
     with open("../processed_data/tool_destinations.yaml") as f:

@@ -45,7 +45,6 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
 <arbitrary unique name>:
   model_type: <"xgb" for Extra Gradient Boosting or "rf" for Random Forest
   dataset_path: <path to the dataset that you want to use for training/evaluation/baseline>
-  is_mixed_data: False
   seed: <seed for splitting data into training and test set in case of training>
   probability_uncertainty (optional): probability used for uncertainty prediction in range [0,1]
   model_params:
@@ -58,7 +57,6 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
 train1:
   model_type: "xgb"
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -66,7 +64,6 @@ train1:
 train2:
   model_type: "rf"
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-  is_mixed_data: False
   seed: 0
   model_params:
     n_estimators: 200
@@ -93,7 +90,6 @@ The training results hereby have the following format:
 ```yaml
 Tool name: ...
 Dataset_path: ...
-Is_mixed_data: ...
 Seed: ...
 Model_params: ...
 Time for training in mins: ...
