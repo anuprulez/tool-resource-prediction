@@ -1,11 +1,12 @@
 train1:
   model_type: "rf"
-#  dataset_path: "saved_data/testset_trinity-2.9.1_2022_08_30-02_45_02_PM.txt"
-  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
+  dataset_path: "saved_data/testset_trinity-2.9.1_2022_09_08-03_34_56_PM.txt"
+#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
+#  dataset_path: "saved_data/bowtie2_transformed.txt"
   seed: 0
-  probability_uncertainty: 0.9
+#  probability_uncertainty: 0.9
   model_params:
-    n_estimators: 100
+    n_estimators: 200
     random_state: 0
-    max_depth: 2
+#    max_depth: 2
 #    min_samples_leaf: 1
