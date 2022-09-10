@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def plot_memory_bytes_over_time():
     create_time = "Create_time"
     memory_bytes = "Memory_bytes"
-    data = pd.read_csv("../processed_data/200000_samples_of_tool_number_0_seed_100.txt", ",",
+    data = pd.read_csv("../../processed_data/example_data/bowtie2_transformed.txt", ",",
                        names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
@@ -46,14 +46,14 @@ def plot_memory_bytes_over_time():
 def plot_file_size_memory_bytes():
     memory_bytes = "Memory_bytes"
     filesize = "Filesize"
-    data = pd.read_csv("../processed_data/200000_samples_of_tool_number_0_seed_100.txt", ",",
+    data = pd.read_csv("../../processed_data/example_data/bowtie2_transformed.txt", ",",
                        names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])[0:100]
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
 
-    # scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)
-    scatter_plt = sns.histplot(data=data, x=filesize)
+    scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)
+    # scatter_plt = sns.histplot(data=data, x=filesize)
     scatter_plt.set_xlabel(filesize + " in GB")
     scatter_plt.set_ylabel(memory_bytes + " in GB")
     scatter_plt.set(title=data["Tool_id"].iloc[0])
