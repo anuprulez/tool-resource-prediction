@@ -11,6 +11,8 @@ Question:
 
 
 TODO:
+- log(1+p) transform data to remove skewness of data distribution
+	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
 - save and load model with pickle. This is only necessary for Random Forest!
 	- use probability_uncertainty from run_config file for prediction in pickle case

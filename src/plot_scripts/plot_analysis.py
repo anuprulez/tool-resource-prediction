@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -46,11 +47,12 @@ def plot_memory_bytes_over_time():
 def plot_file_size_memory_bytes():
     memory_bytes = "Memory_bytes"
     filesize = "Filesize"
-    data = pd.read_csv("../../processed_data/example_data/bowtie2_transformed.txt", ",",
-                       names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])[0:100]
+    data = pd.read_csv("../../processed_data/top_10_tools/Add_a_column1-1.6.txt", ",",
+                       names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
+    # data[filesize] = np.log1p(data[filesize].values / 1000000000).astype('float64')
 
     scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)
     # scatter_plt = sns.histplot(data=data, x=filesize)
