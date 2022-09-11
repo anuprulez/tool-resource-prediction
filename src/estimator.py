@@ -25,6 +25,7 @@ import yaml
 from yaml import SafeLoader
 from typing import Union
 
+
 def save_train_and_test_data(tool_name, X_train, X_test, y_train, y_test, create_times_train, create_times_test):
     # Format for saving: Tool_id, Filesize, Number_of_files, Slots, Memory_bytes, Create_time
     # Format X_train: Filesize, Number_of_files, Slots, Create_time
@@ -65,7 +66,6 @@ def save_train_and_test_data(tool_name, X_train, X_test, y_train, y_test, create
 
 def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, doStandardScale=False, remove_outliers=False,
                            save=False):
-
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
 
     dataset_path = run_config["dataset_path"]
@@ -307,6 +307,19 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
     return regressor, time_for_training_mins
 
 
+def plot_prediction_interval(sample_nr, actual_value, upper_bound, lower_bound, color='#2187bb', horizontal_line_width=0.25):
+    mean = lower_bound + (upper_bound - lower_bound) / 2
+    left = sample_nr - horizontal_line_width / 2
+    top = upper_bound
+    right = sample_nr + horizontal_line_width / 2
+    bottom = lower_bound
+    plt.plot([sample_nr, sample_nr], [top, bottom], color=color)
+    plt.plot([left, right], [top, top], color=color)
+    plt.plot([left, right], [bottom, bottom], color=color, label="Prediction Interval")
+    plt.plot(sample_nr, mean, 'o', color='#2187bb', label="Mean of interval")
+    plt.plot(sample_nr, actual_value, 'o', color='#f44336', label="Actual value")
+
+
 def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test,
                       seed: int, run_config=None) \
         -> tuple[np.ndarray, np.ndarray, dict, Union[RandomForestRegressor, XGBRegressor]]:
@@ -371,7 +384,26 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
         probability_uncertainty = run_config["probability_uncertainty"]
         if 0 <= probability_uncertainty <= 1:
             print("Predict with uncertainty...")
-            y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, probability_uncertainty)
+            err_up, err_down = pred_with_uncertainty(regressor, X_test, probability_uncertainty)
+            y_pred_with_uncertainty = err_up
+
+            truth = y_test.copy()
+            correct = 0.
+            for i, val in enumerate(truth):
+                if err_down[i] <= val <= err_up[i]:
+                    correct += 1
+            print("Percentage in prediction intervals:", correct / len(truth))
+
+            for idx, x in enumerate(X_test[:20]):
+                plot_prediction_interval(idx + 1, y_test[idx], err_up[idx], err_down[idx])
+            plt.title('Prediction Intervals')
+            plt.xlabel("Sample no.")
+            plt.ylabel("Memory in GB")
+            # plt.legend(["Interval", "Actual value"])
+            handles, labels = plt.gca().get_legend_handles_labels()
+            by_label = dict(zip(labels, handles))
+            plt.legend(by_label.values(), by_label.keys(), loc="upper right")
+            plt.show()
 
             mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
             mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
@@ -398,7 +430,6 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
 
 
 def save_model_as_onnx(regressor, train_and_test_data, run_config):
-
     X_train = train_and_test_data['X_train']
     tool_name = train_and_test_data['tool_name']
     model_type = run_config['model_type']
@@ -486,8 +517,9 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         "remove_outliers": remove_outliers
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test = get_train_and_test_set(**method_params,
-                                                                                                       save=save)
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test = get_train_and_test_set(
+        **method_params,
+        save=save)
     train_and_test_data = {
         "X_train": X_train,
         "X_test": X_test,
@@ -550,7 +582,6 @@ def evaluate_model_pipeline(run_configuration, model_path, save):
 
 
 def load_data(do_scaling: bool, run_config=None):
-
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
     dataset_path = run_config["dataset_path"]
     print(f"Load data from path {dataset_path} ...")
@@ -635,6 +666,11 @@ def pred_with_uncertainty(model, X, percentile=0.95):
         prediction = decision_tree.predict(X)
         preds.append(prediction)
     preds = np.vstack(preds).T
+
+    # maximum values of the prediction interval
     err_up = np.percentile(preds, 100 - (100 - percentile) / 2., axis=1, keepdims=True)
     err_up = err_up.reshape(-1, )
-    return err_up
+    # minimum values of the prediction interval
+    err_down = np.percentile(preds, (100 - percentile) / 2., axis=1, keepdims=True)
+    err_down = err_down.reshape(-1, )
+    return err_up, err_down

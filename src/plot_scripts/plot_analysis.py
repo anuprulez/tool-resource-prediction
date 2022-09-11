@@ -52,6 +52,7 @@ def plot_file_size_memory_bytes():
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
+    # data[memory_bytes] = np.log1p(data[memory_bytes].values / 1000000000).astype('float64')
     # data[filesize] = np.log1p(data[filesize].values / 1000000000).astype('float64')
 
     scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)

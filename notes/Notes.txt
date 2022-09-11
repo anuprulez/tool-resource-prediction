@@ -14,6 +14,7 @@ TODO:
 - log(1+p) transform data to remove skewness of data distribution
 	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
+- create CSV File which lists pearson correlation for all tools
 - save and load model with pickle. This is only necessary for Random Forest!
 	- use probability_uncertainty from run_config file for prediction in pickle case
 	- if file ends with onnx not uncertainty available, if pickle then uncertainty is available
@@ -21,7 +22,6 @@ TODO:
 - write into readme and report that only for training the prediction can be done with uncertainty
 - cross validation?
 - put in README how CSViewer can be used
-- create CSV File which lists pearson correlation for all tools
 - add link to report in README
 - search for TODOs and remove them when finished
 - first chapter: motivation
