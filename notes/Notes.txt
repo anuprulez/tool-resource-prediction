@@ -7,20 +7,17 @@ Question:
 
 
 - mention:
-	- prediction with uncertainty is not possible with pickle either
-
+	- test & train data gets saved
+	- save and load model as joblib file
+	- continued report. aobut 11 pages
+	- log(1+p) transformation
 
 TODO:
-- report: when saving the file as .joblib prediction with uncertainty is possible!
+- report: when saving the file as .joblib prediction with uncertainty is possible! So uncertainty is available for evaluation as well as training
 - log(1+p) transform data to remove skewness of data distribution
 	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
 - create CSV File which lists pearson correlation for all tools
-- save and load model with pickle. This is only necessary for Random Forest!
-	- use probability_uncertainty from run_config file for prediction in pickle case
-	- if file ends with onnx not uncertainty available, if pickle then uncertainty is available
-	- write this into readme and report. As well as that pickle is only for Random Forest
-- write into readme and report that only for training the prediction can be done with uncertainty
 - cross validation?
 - put in README how CSViewer can be used
 - add link to report in README

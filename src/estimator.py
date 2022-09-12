@@ -231,7 +231,7 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
     r2_score = evaluation_stats["r2_score"]
     model_type = run_config["model_type"]
 
-    if evaluation_stats["evaluation_stats_uncertainty"] is not None:
+    if "evaluation_stats_uncertainty" in evaluation_stats:
         evaluation_stats_uncertainty = evaluation_stats["evaluation_stats_uncertainty"]
         mean_abs_error_with_uncertainty = evaluation_stats_uncertainty["mean_abs_error_with_uncertainty"]
         mean_squared_error_with_uncertainty = evaluation_stats_uncertainty["mean_squared_error_with_uncertainty"]
@@ -250,7 +250,7 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
         f.write(f"Mean squared error: {mean_squared_error}\n")
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write(f"R2 Score: {r2_score}\n")
-        if evaluation_stats["evaluation_stats_uncertainty"] is not None:
+        if "evaluation_stats_uncertainty" in evaluation_stats:
             f.write(f"Mean absolute error with uncertainty: {mean_abs_error_with_uncertainty}\n")
             f.write(f"Mean squared error with uncertainty: {mean_squared_error_with_uncertainty}\n")
             f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
@@ -465,6 +465,7 @@ def save_model_to_file(regressor, train_and_test_data, run_configuration):
 
 def load_model_and_predict(run_config, model_path, X, y, tool_name):
     print(f"Load model from path {model_path}")
+    evaluation_stats_uncertainty = None
     if model_path.endswith(".onnx"):
         sess = onnx_rt.InferenceSession(model_path)
         input_name = sess.get_inputs()[0].name
