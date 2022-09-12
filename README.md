@@ -83,7 +83,7 @@ The model predicts the memory bytes in GB
 
 ### Saved data
 By setting "--save" when running the "main.py" the training results, train set, test set and the trained model will be saved in distinct files.
-The trained model is hereby saved as an ONNX-file to the "saved_models" directory inside the "src" folder.
+The trained model is hereby saved as an ONNX-file & as a .joblib-file to the "saved_models" directory inside the "src" folder.
 The training results, train set & test set are saved to the "saved_data" directory inside the "src" folder. 
 
 The training results hereby have the following format:
@@ -115,8 +115,10 @@ Filesize (GB), Prediction (GB), Target (GB), Create_time
 ```
   - first parameter: path to the run configuration file. The run configuration file has to be in the same format as mentioned above
   - (optional) --save: save the evaluation results to a file (default: false)
-  - (optional) --model: The path to the model (ONNX-file) you want to load and predict with
+  - (optional) --model: The path to the model (ONNX-file or .joblib-file) you want to load and predict with
 ```
+
+Prediction with uncertainty is only available if the model is loaded as a .joblib-file
 
 Don't forget to set the "dataset_path" in the run configuration file to the actual data you want to use for evaluation.
 

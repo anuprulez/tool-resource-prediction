@@ -9,6 +9,7 @@ import xgboost as xgb
 import onnxruntime as onnx_rt
 import onnxmltools
 import onnx
+import pickle
 
 # Models
 from sklearn.ensemble import RandomForestRegressor
@@ -229,12 +230,13 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
     root_mean_squared_error = evaluation_stats["root_mean_squared_error"]
     r2_score = evaluation_stats["r2_score"]
     model_type = run_config["model_type"]
-    # TODO: find out if this is possible
-    # if model_type == "rf":
-    #     mean_abs_error_with_uncertainty = training_stats["mean_abs_error_with_uncertainty"]
-    #     mean_squared_error_with_uncertainty = training_stats["mean_squared_error_with_uncertainty"]
-    #     root_mean_squared_error_with_uncertainty = training_stats["root_mean_squared_error_with_uncertainty"]
-    #     r2_score_with_uncertainty = training_stats["r2_score_with_uncertainty"]
+
+    if evaluation_stats["evaluation_stats_uncertainty"] is not None:
+        evaluation_stats_uncertainty = evaluation_stats["evaluation_stats_uncertainty"]
+        mean_abs_error_with_uncertainty = evaluation_stats_uncertainty["mean_abs_error_with_uncertainty"]
+        mean_squared_error_with_uncertainty = evaluation_stats_uncertainty["mean_squared_error_with_uncertainty"]
+        root_mean_squared_error_with_uncertainty = evaluation_stats_uncertainty["root_mean_squared_error_with_uncertainty"]
+        r2_score_with_uncertainty = evaluation_stats_uncertainty["r2_score_with_uncertainty"]
 
     str_eval_or_baseline = "evaluation"
     if isBaseline:
@@ -248,14 +250,11 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
         f.write(f"Mean squared error: {mean_squared_error}\n")
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write(f"R2 Score: {r2_score}\n")
-        # TODO: find out if this is possible
-        # # With uncertainty
-        # # Only supported for RF
-        # if model_type == "rf":
-        #     f.write(f"Mean absolute error with uncertainty: {mean_abs_error_with_uncertainty}\n")
-        #     f.write(f"Mean squared error with uncertainty: {mean_squared_error_with_uncertainty}\n")
-        #     f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
-        #     f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
+        if evaluation_stats["evaluation_stats_uncertainty"] is not None:
+            f.write(f"Mean absolute error with uncertainty: {mean_abs_error_with_uncertainty}\n")
+            f.write(f"Mean squared error with uncertainty: {mean_squared_error_with_uncertainty}\n")
+            f.write(f"Root mean squared error with uncertainty: {root_mean_squared_error_with_uncertainty}\n")
+            f.write(f"R2 Score with uncertainty: {r2_score_with_uncertainty}\n")
         f.write("############################\n")
         f.write("Filesize (GB), Prediction (GB), Target (GB), Create_time\n")
         f.write("############################\n")
@@ -387,23 +386,23 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
             err_up, err_down = pred_with_uncertainty(regressor, X_test, probability_uncertainty)
             y_pred_with_uncertainty = err_up
 
-            truth = y_test.copy()
-            correct = 0.
-            for i, val in enumerate(truth):
-                if err_down[i] <= val <= err_up[i]:
-                    correct += 1
-            print("Percentage in prediction intervals:", correct / len(truth))
-
-            for idx, x in enumerate(X_test[:20]):
-                plot_prediction_interval(idx + 1, y_test[idx], err_up[idx], err_down[idx])
-            plt.title('Prediction Intervals')
-            plt.xlabel("Sample no.")
-            plt.ylabel("Memory in GB")
-            # plt.legend(["Interval", "Actual value"])
-            handles, labels = plt.gca().get_legend_handles_labels()
-            by_label = dict(zip(labels, handles))
-            plt.legend(by_label.values(), by_label.keys(), loc="upper right")
-            plt.show()
+            # truth = y_test.copy()
+            # correct = 0.
+            # for i, val in enumerate(truth):
+            #     if err_down[i] <= val <= err_up[i]:
+            #         correct += 1
+            # print("Percentage in prediction intervals:", correct / len(truth))
+            #
+            # for idx, x in enumerate(X_test[:20]):
+            #     plot_prediction_interval(idx + 1, y_test[idx], err_up[idx], err_down[idx])
+            # plt.title('Prediction Intervals')
+            # plt.xlabel("Sample no.")
+            # plt.ylabel("Memory in GB")
+            # # plt.legend(["Interval", "Actual value"])
+            # handles, labels = plt.gca().get_legend_handles_labels()
+            # by_label = dict(zip(labels, handles))
+            # plt.legend(by_label.values(), by_label.keys(), loc="upper right")
+            # plt.show()
 
             mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
             mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
@@ -450,22 +449,57 @@ def save_model_as_onnx(regressor, train_and_test_data, run_config):
     onnxmltools.save_model(onnx_model, filename_str)
 
 
-def save_model_as_pickle(regressor, train_and_test_data, run_configuration):
-    pass
+def save_model_as_joblib(regressor, train_and_test_data, run_config):
+    from joblib import dump
+    tool_name = train_and_test_data['tool_name']
+    model_type = run_config['model_type']
+    filename_str = f"saved_models/model_{model_type}_{tool_name.replace('/', '-')}_{str(datetime.now().strftime('%Y_%m_%d-%I_%M_%S_%p'))}.joblib"
+    print(f"Save model to file {filename_str}")
+    dump(regressor, filename_str)
 
 
 def save_model_to_file(regressor, train_and_test_data, run_configuration):
     save_model_as_onnx(regressor, train_and_test_data, run_configuration)
-    save_model_as_pickle(regressor, train_and_test_data, run_configuration)
+    save_model_as_joblib(regressor, train_and_test_data, run_configuration)
 
 
-def load_model_and_predict(model_path, X, y, tool_name):
+def load_model_and_predict(run_config, model_path, X, y, tool_name):
     print(f"Load model from path {model_path}")
-    print("Predict...")
-    sess = onnx_rt.InferenceSession(model_path)
-    input_name = sess.get_inputs()[0].name
-    label_name = sess.get_outputs()[0].name
-    y_pred = sess.run([label_name], {input_name: X.astype(numpy.float32)})[0].flatten()
+    if model_path.endswith(".onnx"):
+        sess = onnx_rt.InferenceSession(model_path)
+        input_name = sess.get_inputs()[0].name
+        label_name = sess.get_outputs()[0].name
+        print("Predict...")
+        y_pred = sess.run([label_name], {input_name: X.astype(numpy.float32)})[0].flatten()
+    elif model_path.endswith(".joblib"):
+        from joblib import load
+        model = load(model_path)
+        y_pred = model.predict(X)
+        # With uncertainty
+        # only supported for RF
+        if run_config["model_type"] == "rf" and "probability_uncertainty" in run_config:
+            probability_uncertainty = run_config["probability_uncertainty"]
+            if 0 <= probability_uncertainty <= 1:
+                print("Predict with uncertainty...")
+                err_up, err_down = pred_with_uncertainty(model, X, probability_uncertainty)
+                y_pred_with_uncertainty = err_up
+
+                mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y, y_pred_with_uncertainty)
+                mean_squared_error_with_uncertainty = metrics.mean_squared_error(y, y_pred_with_uncertainty)
+                root_mean_squared_error_with_uncertainty = np.sqrt(
+                    metrics.mean_squared_error(y, y_pred_with_uncertainty))
+                r2_score_with_uncertainty = metrics.r2_score(y, y_pred_with_uncertainty)
+                print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
+                print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
+                print('Root Mean Squared Error with uncertainty:', root_mean_squared_error_with_uncertainty)
+                print('R2 Score with uncertainty:', r2_score_with_uncertainty)
+
+                evaluation_stats_uncertainty = {
+                    "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
+                    "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
+                    "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
+                    "r2_score_with_uncertainty": r2_score_with_uncertainty
+                }
 
     mean_abs_error = metrics.mean_absolute_error(y, y_pred)
     mean_squared_error = metrics.mean_squared_error(y, y_pred)
@@ -483,29 +517,9 @@ def load_model_and_predict(model_path, X, y, tool_name):
         "r2_score": r2_score
     }
 
-    # With uncertainty
-    # only supported for RF
-    # TODO: find out how to do this for ONNX model
-    # if sess.get_modelmeta().graph_name == "Random Forest":
-    #     y_pred_with_uncertainty = pred_with_uncertainty(regressor, X_test, 90)
-    #
-    #     mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y_test, y_pred_with_uncertainty)
-    #     mean_squared_error_with_uncertainty = metrics.mean_squared_error(y_test, y_pred_with_uncertainty)
-    #     root_mean_squared_error_with_uncertainty = np.sqrt(metrics.mean_squared_error(y_test, y_pred_with_uncertainty))
-    #     r2_score_with_uncertainty = metrics.r2_score(y_test, y_pred_with_uncertainty)
-    #     print('Mean Absolute Error with uncertainty:', mean_abs_error_with_uncertainty)
-    #     print('Mean Squared Error with uncertainty:', mean_squared_error_with_uncertainty)
-    #     print('Root Mean Squared Error with uncertainty:', root_mean_squared_error_with_uncertainty)
-    #     print('R2 Score with uncertainty:', r2_score_with_uncertainty)
-    #
-    #     training_stats_uncertainty = {
-    #         "mean_abs_error_with_uncertainty": mean_abs_error_with_uncertainty,
-    #         "mean_squared_error_with_uncertainty": mean_squared_error_with_uncertainty,
-    #         "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
-    #         "r2_score_with_uncertainty": r2_score_with_uncertainty
-    #     }
-    #     training_stats.update(training_stats_uncertainty)
-    #
+    if evaluation_stats_uncertainty is not None:
+        evaluation_stats["evaluation_stats_uncertainty"] = evaluation_stats_uncertainty
+
     return y_pred, y, evaluation_stats
 
 
@@ -576,7 +590,7 @@ def evaluate_model_pipeline(run_configuration, model_path, save):
     # Remove unnecessary params for the next steps
     method_params.pop("do_scaling")
 
-    y_pred, y, evaluation_stats = load_model_and_predict(model_path, **data)
+    y_pred, y, evaluation_stats = load_model_and_predict(run_configuration, model_path, **data)
     if save:
         save_evaluation_results(y_pred, evaluation_stats, **method_params, **data, create_times=create_times)
 

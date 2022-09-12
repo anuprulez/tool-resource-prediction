@@ -11,6 +11,7 @@ Question:
 
 
 TODO:
+- report: when saving the file as .joblib prediction with uncertainty is possible!
 - log(1+p) transform data to remove skewness of data distribution
 	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
