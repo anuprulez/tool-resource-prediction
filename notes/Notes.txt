@@ -2,21 +2,16 @@ Tool Resource Prediction for Genomic Datasets
 
 Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
-- what does the job record? The maximum memory usage of a tool
-
-
-
-- mention:
-	- test & train data gets saved
-	- save and load model as joblib file
-	- continued report. aobut 11 pages
-	- log(1+p) transformation
 
 TODO:
-- report: when saving the file as .joblib prediction with uncertainty is possible! So uncertainty is available for evaluation as well as training
+- include comparison to Kamalis data and cite
+	- try hisat2 data and include it in report as well as bowtie2
+- if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation
+- cite paper that uses log(1+p)
 - log(1+p) transform data to remove skewness of data distribution
 	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
+- put source code into report?
 - create CSV File which lists pearson correlation for all tools
 - cross validation?
 - put in README how CSViewer can be used
@@ -29,12 +24,10 @@ TODO:
 - use also tools that are not used as much --> maybe at least 1000-2000
 - integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
 	- analysis is one model better for multiple tools or is a single model better?
+	- this can be put as something can be done later on in the report
 - show data in report: if we have good correlation -> our model works well
 					- show cases where correlation is not so good --> model is not so good
 - prediction intervals only work if tree is big enough --> how big?
-- our task should be able to be given a percentage with which the tool should succeed given the output of our model. Try to find a way to include this
-	- Prediction Intervals for Gradient Boosting Regression (https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_quantile.html)
-	- http://contrib.scikit-learn.org/forest-confidence-interval/index.html
 - do trainings and compare results with uncertainty and without
 - Hyperparameter Optimization with scikit-learn
 	- Grid search
@@ -43,23 +36,16 @@ TODO:
 - look into the code here to see how the data recording is done: https://github.com/usegalaxy-eu/galaxy/tree/release_22.01_europe/lib/galaxy
 - look here: https://bioblend.readthedocs.io/en/latest/api_docs/galaxy/all.html#module-bioblend.galaxy.jobs
 - try 3 different seeds and avg over them
-- try out some Preproccesors, they help to improve
-- use other models as well
-
+- write in section further work in report: more features are needed for better prediction. At the moment only 2 relevant features
 
 - maybe try to include the category of the tool for the prediction?
 - try to get features for the different tools: like number params
-- XGB: extra gradient boosting
 - try other models:
 	- simple models Linear Regressor or SVR
 	- Ensemble based or tree based methods
 	- e.g. Gradient boosting
 	- see on the bottom
 - create benchmarks: one low capacity model fitted on data, one high capacity model fitted on data, one model that assigns random values
-
-
-- in future: find out if tool_id is important for prediction
-- in future: is it possible to predict runtime?
 
 
 DONE:
@@ -74,11 +60,6 @@ DONE:
 - Filter all entries that have invalid data this includes:
 	- data with memory bytes over 1 TB
 	- data with memory bytes over 8 * assigned memory
-
-
-Questions:
-- Categorical data: how should I encode the tool name?
-- question for later on: for the prediction, do we want to use multiple models for different tools or one model for all tools?
 
 Infos:
 - write report 20-30 pages
@@ -118,6 +99,3 @@ Possible methods:
 	- Ensemble Learning (use different models and average them)
 		- e.g Random forests or Gradient boosting (better than Random forests according to wikipedia)
 	- Neural networks
-	
-Ideas:
-	- do we also want to minimize the time for a tool to complete?
