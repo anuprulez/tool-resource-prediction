@@ -4,6 +4,7 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 TODO:
+- create CSV File which lists pearson correlation for all tools
 - include comparison to Kamalis data and cite
 	- try hisat2 data and include it in report as well as bowtie2
 - if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation
@@ -12,7 +13,6 @@ TODO:
 	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
 - put source code into report?
-- create CSV File which lists pearson correlation for all tools
 - cross validation?
 - put in README how CSViewer can be used
 - add link to report in README
