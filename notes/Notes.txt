@@ -5,6 +5,7 @@ Question:
 
 TODO:
 - create CSV File which lists pearson correlation for all tools
+	- include this in report and readme
 - include comparison to Kamalis data and cite
 	- try hisat2 data and include it in report as well as bowtie2
 - if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation

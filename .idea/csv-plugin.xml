@@ -17,6 +17,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\saved_data\pearson_corr_nan_entries.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\saved_data\pearson_corr_scores.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\saved_data\pearson_corr_scores_fixed.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
