@@ -17,7 +17,14 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\src\saved_data\pearson_corr_nan_entries.csv">
+        <entry key="\processed_data\pearson_corr_scores_sorted.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\saved_data\avg_memory_for_all_tools.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -25,13 +32,6 @@
           </value>
         </entry>
         <entry key="\src\saved_data\pearson_corr_scores.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\src\saved_data\pearson_corr_scores_fixed.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

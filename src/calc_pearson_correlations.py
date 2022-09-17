@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from scipy import stats
 import re
 from tqdm import tqdm
@@ -7,6 +8,7 @@ df = pd.read_csv('../processed_data/dataset_labeled/valid_data.txt', sep=",", us
                  names=["tool_id", "filesize", "num_files", "slots", "memory_bytes", "create_time"])
 
 corr_scores = dict()
+df_corr_scores = pd.DataFrame(columns=["tool_id", "pearson_correlation", "nr_samples"])
 
 for idx, entry in tqdm(df.iterrows()):
     filesize = entry["filesize"]
@@ -19,8 +21,8 @@ for idx, entry in tqdm(df.iterrows()):
     if idx != -1:
         start_idx = tool_name[0:idx].rfind('/') + 1
     tool_name = tool_name[start_idx:]
-    # Remove galaxy0 or galaxy 1 from name
-    tool_name = re.sub(r"\+galaxy\d", "", tool_name)
+    # Remove +...galaxy0 or +...galaxy 1 from name
+    tool_name = re.sub(r"\+.*galaxy\d", "", tool_name)
     if tool_name in corr_scores:
         corr_scores[tool_name]["filesize"].append(filesize)
         corr_scores[tool_name]["memory_bytes"].append(memory_bytes)
@@ -37,21 +39,19 @@ for tool in tqdm(corr_scores):
     # Need at least two samples to calc pearson correlation
     if nr_samples >= 2:
         pearson_corr = stats.pearsonr(filesizes, memory_bytes)[0]
-    # Otherwise, 0 is assigned
+    # Otherwise nan is assigned
     else:
-        pearson_corr = 0
+        pearson_corr = np.nan
     corr_scores[tool] = (pearson_corr, nr_samples)
 
-# Sort list such that the tool are ordered according to their correlation
-corr_scores = corr_scores.items()
-sorted_corr_scores = sorted(corr_scores, key=lambda tup: -tup[1][0])
+for key, value in corr_scores.items():
+    df_entry = pd.DataFrame({"tool_id": key,
+                             "pearson_correlation": value[0],
+                             "nr_samples": value[1]
+                             }, index=[0])
+    df_corr_scores = pd.concat([df_corr_scores, df_entry], ignore_index=True)
 
-filename = "saved_data/pearson_corr_scores_not_sorted.csv"
+df_corr_scores = df_corr_scores.sort_values(by=["pearson_correlation", "nr_samples"], ascending=False)
+filename = "saved_data/pearson_corr_scores.csv"
 print(f"Save correlation scores to file {filename}...")
-with open(filename, 'a+') as f:
-    f.write("tool_id, pearson_correlation, nr_samples \n")
-    for entry in sorted_corr_scores:
-        tool_name = entry[0]
-        corr_score = entry[1][0]
-        nr_samples = entry[1][1]
-        f.write(f"{tool_name}, {corr_score}, {nr_samples} \n")
+df_corr_scores.to_csv(filename, index=False, na_rep="nan")

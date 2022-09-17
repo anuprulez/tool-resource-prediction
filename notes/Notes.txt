@@ -4,6 +4,8 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 TODO:
+- run correlation script again
+- look at data from tools which have strong negative correlation
 - create CSV File which lists pearson correlation for all tools
 	- include this in report and readme
 - include comparison to Kamalis data and cite
