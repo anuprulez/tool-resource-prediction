@@ -134,3 +134,15 @@ The model predicts the memory bytes in GB
 ```
 
 Don't forget to set the "dataset_path" in the run configuration file to the actual data you want to use for evaluation.
+
+## Information about the dataset
+
+There are several files that give us more information about the dataset and the specific tools.
+
+- [pearson correlation for all tools](processed_data/pearson_corr_scores.csv):
+  This file lists all the tools with their respective pearson correlation between filesize & memory_bytes
+- [average memory for all tools](processed_data/avg_memory_for_all_tools.csv):
+  This file lists all the tools with their respective avg. memory in GBs
+- [faulty data](processed_data/dataset_labeled/faulty_data.txt):
+  This file lists all the entries in the dataset that have faulty values for memory_bytes. 
+  Faulty because they exceed the maximum possible memory size assigned by Galaxy.

@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="\processed_data\avg_memory_for_all_tools.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\processed_data\example_data\bowtie2.csv">
           <value>
             <Attribute>
@@ -17,21 +24,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\processed_data\pearson_corr_scores_sorted.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\src\saved_data\avg_memory_for_all_tools.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\src\saved_data\pearson_corr_scores.csv">
+        <entry key="\processed_data\pearson_corr_scores.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

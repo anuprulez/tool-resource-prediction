@@ -23,7 +23,6 @@ TODO:
 - first chapter: motivation
 - why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would be overkill
 	--> something for the future?
-- try to find similar work. State of the art approaches
 - use also tools that are not used as much --> maybe at least 1000-2000
 - integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
 	- analysis is one model better for multiple tools or is a single model better?
