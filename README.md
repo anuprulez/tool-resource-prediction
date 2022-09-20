@@ -40,13 +40,21 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
 ## Run configuration file
 - The run configuration file has to be a yaml-file inside the "run_configurations" folder
 - In this file you can define multiple trainings that will be run sequentially in the given order
+- Following model types are supported: 
+  - "rf" for Random Forest
+  - "xgb" for XGBoost
+  - "lr" for Linear Regression
+  - "svr" for Support Vector Regression
 - The file must have the following format:
 ```yaml
 <arbitrary unique name>:
-  model_type: <"xgb" for Extra Gradient Boosting or "rf" for Random Forest
+  model_type: <one of the model types defined above>
   dataset_path: <path to the dataset that you want to use for training/evaluation/baseline>
   seed: <seed for splitting data into training and test set in case of training>
   probability_uncertainty (optional): probability used for uncertainty prediction in range [0,1]
+  doStandardScale (optional): scale the inputs using StandardScaler (default --> False)
+  doHPO (optional): do an Hyperparameter Optimization (default --> false)
+  do_cross_validation (optional): do Cross Validation (default --> false)
   model_params:
       <parameters for the model you want to use>
 ```
@@ -58,6 +66,9 @@ train1:
   model_type: "xgb"
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
   seed: 0
+  doStandardScale: False
+  doHPO: True 
+  do_cross_validation: False
   model_params:
     n_estimators: 200
     random_state: 0
@@ -65,10 +76,11 @@ train2:
   model_type: "rf"
   dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
   seed: 0
+  doStandardScale: True
   model_params:
     n_estimators: 200
     random_state: 0
-      bootstrap: False
+    bootstrap: False
 ```
 
 ## How to train a model:

@@ -1,8 +1,9 @@
 import numpy
 from matplotlib import pyplot as plt
 from onnxconverter_common import FloatTensorType
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import cross_validate
 from sklearn import metrics
 from sklearn import tree
 import xgboost as xgb
@@ -14,6 +15,8 @@ import pickle
 # Models
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
 
 import sys
 import time
@@ -65,9 +68,10 @@ def save_train_and_test_data(tool_name, X_train, X_test, y_train, y_test, create
             f.write("\n")
 
 
-def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, doStandardScale=False, remove_outliers=False,
+def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_outliers=False,
                            save=False):
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+    doStandardScale = run_config["doStandardScale"] if "doStandardScale" in run_config else False
 
     dataset_path = run_config["dataset_path"]
     print(f"Get train and test set from path {dataset_path} ...")
@@ -130,6 +134,7 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, doStand
         print("Outliers are not removed.")
 
     if doStandardScale:
+        print("Standard scaling X_train and X_test...")
         sc = StandardScaler()
         # Scale all columns
         X_train = sc.fit_transform(X_train_orig)
@@ -139,6 +144,13 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, doStand
         X_train = X_train_orig.copy()
         X_test = X_test_orig.copy()
         X_test_unscaled = X_test.copy()
+
+    # doLogTrafo = run_config["doLogTrafo"] if "doLogTrafo" in run_config else False
+    # if doLogTrafo:
+    #     pt = PowerTransformer()
+    #     X_train = pt.fit_transform(X_train_orig)
+    #     X_test = pt.transform(X_test_orig)
+    #     X_test_unscaled = pt.inverse_transform(X_test)
 
     if save:
         X_train_to_save = X_train_orig.copy()
@@ -235,7 +247,8 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
         evaluation_stats_uncertainty = evaluation_stats["evaluation_stats_uncertainty"]
         mean_abs_error_with_uncertainty = evaluation_stats_uncertainty["mean_abs_error_with_uncertainty"]
         mean_squared_error_with_uncertainty = evaluation_stats_uncertainty["mean_squared_error_with_uncertainty"]
-        root_mean_squared_error_with_uncertainty = evaluation_stats_uncertainty["root_mean_squared_error_with_uncertainty"]
+        root_mean_squared_error_with_uncertainty = evaluation_stats_uncertainty[
+            "root_mean_squared_error_with_uncertainty"]
         r2_score_with_uncertainty = evaluation_stats_uncertainty["r2_score_with_uncertainty"]
 
     str_eval_or_baseline = "evaluation"
@@ -267,46 +280,119 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
             f.write("\n")
 
 
+# Fit the regressor using cross-validation
+def fit_with_cv(regressor, X_train, y_train):
+    print("Fit the regressor using 5-fold cross-validation...")
+    scores = cross_validate(regressor, X_train, y_train, verbose=2, return_train_score=True, return_estimator=True, scoring='r2')
+    best_score_idx = np.argmax(scores["test_score"])
+    best_regressor = scores["estimator"][best_score_idx]
+    mean_score = np.mean(scores["test_score"])
+    print(f"Mean cross-validation test score: {mean_score}")
+    return best_regressor, scores
+
+
+# Fit using HPO
+def fit_with_hpo(regressor, X_train, y_train, param_grid):
+    print("Do Hyperparameter Optimization on following parameter grid:")
+    print(param_grid)
+    clf = GridSearchCV(regressor, param_grid, verbose=2, n_jobs=2, scoring='r2')
+    clf.fit(X_train, y_train)
+    regressor = clf.best_estimator_
+    return regressor
+
+
+def fit_random_forest(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
+    print("Fit Random Forest...")
+    scores = {}
+    # criterion='absolute_error', bootstrap=False, warm_start=True
+    regressor = RandomForestRegressor(**run_config["model_params"], verbose=2)
+    if do_hyper_param_opt:
+        param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
+                       'criterion': ['absolute_error', 'poisson', 'squared_error']}
+        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+    elif do_cross_validation:
+        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+    else:
+        regressor.fit(X_train, y_train)
+    return regressor, scores
+
+
+def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
+    print("Fit XGB model...")
+    xgb.set_config(verbosity=2)
+    scores = {}
+
+    # TODO: maybe try XGB RF Regressor
+    # xgb.XGBRFRegressor
+    regressor = xgb.XGBRegressor(**run_config["model_params"], n_jobs=multiprocessing.cpu_count() // 2)
+    if do_hyper_param_opt:
+        # From 0.03 to 0.3
+        lr_space = np.logspace(-2, -1, num=10) * 3
+        param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400], 'learning_rate': lr_space}
+        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+    elif do_cross_validation:
+        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+    else:
+        regressor.fit(X_train, y_train)
+    return regressor, scores
+
+
+def fit_linear_regressor(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
+    print("Fit Linear Regressor...")
+    scores = {}
+    regressor = LinearRegression(copy_X=True, **run_config["model_params"])
+    if do_hyper_param_opt:
+        param_grid = {}
+        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+    elif do_cross_validation:
+        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+    else:
+        regressor.fit(X_train, y_train)
+    return regressor, scores
+
+
+def fit_svr(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
+    print("Fit Support Vector Regressor...")
+    scores = {}
+
+    regressor = SVR(cache_size=1000, verbose=True, **run_config["model_params"])
+    if do_hyper_param_opt:
+        # From 0.00001 to 0.1
+        epsilon_space = np.logspace(-5, -1, num=15)
+        param_grid = {'epsilon': epsilon_space}
+        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+    elif do_cross_validation:
+        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+    else:
+        regressor.fit(X_train, y_train)
+    return regressor, scores
+
+
 def fit_model(X_train, y_train, hyper_param_opt, run_config):
     start_time = time.time()
+    do_cross_validation = run_config["do_cross_validation"] if "do_cross_validation" in run_config else False
+    model_type = run_config["model_type"]
 
-    if run_config["model_type"] == "rf":
-        print("Fit Random Forest...")
-        # criterion='absolute_error', bootstrap=False, warm_start=True
-        regressor = RandomForestRegressor(**run_config["model_params"], verbose=2)
-        if hyper_param_opt:
-            clf = GridSearchCV(regressor, {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
-                                           'criterion': ['absolute_error', 'poisson', 'squared_error']}, verbose=2,
-                               n_jobs=2)
-            clf.fit(X_train, y_train)
-            regressor = clf.best_estimator_
-        else:
-            regressor.fit(X_train, y_train)
-
-    if run_config["model_type"] == "xgb":
-        print("Fit XGB model...")
-        xgb.set_config(verbosity=2)
-
-        # TODO: maybe try XGB RF Regressor
-        # xgb.XGBRFRegressor
-        regressor = xgb.XGBRegressor(**run_config["model_params"], n_jobs=multiprocessing.cpu_count() // 2)
-        if hyper_param_opt:
-            # From 0.03 to 0.3
-            lr_space = np.logspace(-2, -1, num=10) * 3
-            clf = GridSearchCV(regressor, {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
-                                           'learning_rate': lr_space},
-                               verbose=2, n_jobs=2)
-            clf.fit(X_train, y_train)
-            regressor = clf.best_estimator_
-        else:
-            regressor.fit(X_train, y_train)
+    if do_cross_validation and hyper_param_opt:
+        raise ValueError("do_cross_validation and doHPO are both set to true in the run configuration. Invalid combination. Set only one of them to true")
+    if model_type == "rf":
+        regressor, scores = fit_random_forest(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+    elif model_type == "xgb":
+        regressor, scores = fit_xgb(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+    elif model_type == "lr":
+        regressor, scores = fit_linear_regressor(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+    elif model_type == "svr":
+        regressor, scores = fit_svr(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+    else:
+        raise ValueError(f"{run_config['model_type']} is no valid model type in run configuration!")
 
     end_time = time.time()
     time_for_training_mins = (end_time - start_time) / 60
     return regressor, time_for_training_mins
 
 
-def plot_prediction_interval(sample_nr, actual_value, upper_bound, lower_bound, color='#2187bb', horizontal_line_width=0.25):
+def plot_prediction_interval(sample_nr, actual_value, upper_bound, lower_bound, color='#2187bb',
+                             horizontal_line_width=0.25):
     mean = lower_bound + (upper_bound - lower_bound) / 2
     left = sample_nr - horizontal_line_width / 2
     top = upper_bound
@@ -328,35 +414,35 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     """
     np.set_printoptions(threshold=sys.maxsize)
 
-    # X_train[:, 0] = np.log1p(X_train[:, 0])
-    # X_test[:, 0] = np.log1p(X_test[:, 0])
-    # y_train = np.log1p(y_train)
-    # y_test = np.log1p(y_test)
+    doLogTrafo = run_config["doLogTrafo"] if "doLogTrafo" in run_config else False
+    # if doLogTrafo:
+    #     X_train[:, 0] = np.log1p(X_train[:, 0])
+    #     X_test[:, 0] = np.log1p(X_test[:, 0])
+        # y_train = np.log1p(y_train)
+        # y_test = np.log1p(y_test)
 
-    regressor, time_for_training_mins = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=False,
+    hyper_param_opt = run_config["doHPO"] if "doHPO" in run_config else False
+    regressor, time_for_training_mins = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
                                                   run_config=run_config)
 
     # tree.plot_tree(regressor.estimators_[0], feature_names=["Filesize", "Number_of_files", "Slots"], rounded=True)
     # plt.show()
 
-    regressor_params = regressor.get_params()
-    relevant_params = {"n_estimators", "random_state", "criterion", "max_depth", "learning_rate", "bootstrap",
-                       "min_samples_leaf"}
-    # Extract the relevant params from the model
-    model_params = [f"{key}: {regressor_params.get(key)}" for key in (regressor_params.keys() & relevant_params)]
+    model_params = sorted(regressor.get_params().items())
 
     print("Time taken in minutes for training:", time_for_training_mins)
 
-    feature_importances = regressor.feature_importances_
+    feature_importances = regressor.feature_importances_ if hasattr(regressor, 'feature_importances_') else []
     print("Feature importances:", feature_importances)
 
     print("Predict...")
     y_pred = regressor.predict(X_test)
 
-    # X_train[:, 0] = np.expm1(X_train[:, 0])
-    # X_test[:, 0] = np.expm1(X_test[:, 0])
-    # y_test = np.expm1(y_test)
-    # y_pred = np.expm1(y_pred)
+    # if doLogTrafo:
+    #     X_train[:, 0] = np.expm1(X_train[:, 0])
+    #     X_test[:, 0] = np.expm1(X_test[:, 0])
+        # y_test = np.expm1(y_test)
+        # y_pred = np.expm1(y_pred)
 
     mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
     mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
@@ -440,11 +526,14 @@ def save_model_as_onnx(regressor, train_and_test_data, run_config):
     print(f"Save model to file {filename_str}")
 
     if model_type == "xgb":
-        onnx_model = onnxmltools.convert_xgboost(regressor, initial_types=initial_types,
-                                                 name='XGB Regressor')
-    if model_type == "rf":
+        onnx_model = onnxmltools.convert_xgboost(regressor, initial_types=initial_types, name='XGB Regressor')
+    elif model_type == "rf":
+        onnx_model = onnxmltools.convert_sklearn(regressor, initial_types=initial_types, name='Random Forest')
+    elif model_type == "lr":
+        onnx_model = onnxmltools.convert_sklearn(regressor, initial_types=initial_types, name='Linear Regressor')
+    elif model_type == "svr":
         onnx_model = onnxmltools.convert_sklearn(regressor, initial_types=initial_types,
-                                                 name='Random Forest')
+                                                 name='Support Vector Regressor')
 
     onnxmltools.save_model(onnx_model, filename_str)
 
@@ -529,7 +618,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         "do_scaling": True,
         "seed": run_configuration["seed"],
         "run_config": run_configuration,
-        "remove_outliers": remove_outliers
+        "remove_outliers": remove_outliers,
     }
     # Data loading
     X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test = get_train_and_test_set(

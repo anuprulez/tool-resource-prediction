@@ -4,19 +4,24 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 TODO:
-- run correlation script again
-- look at data from tools which have strong negative correlation
+- implement log or power transformation
+- report:
+	- the different models
+	- write each benefits and disadvantages of the different models
+	- standard scaling
+	- CV
+	- log(p+1) transformation (cite paper that uses log(1+p))
+		- removes skewness of data distribution. Original data follows some kind of exponential distribution or a skewed distribution
+		- include plots of data distributions
+- report: num_samples per tool differ very much
+- removing outliers: cut data +- 2 * std or only data over + 2*std?
 - create CSV File which lists pearson correlation for all tools
-	- include this in report and readme
+	- include this in report
 - include comparison to Kamalis data and cite
 	- try hisat2 data and include it in report as well as bowtie2
 - if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation
-- cite paper that uses log(1+p)
-- log(1+p) transform data to remove skewness of data distribution
-	- mention this in report
 - write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
 - put source code into report?
-- cross validation?
 - put in README how CSViewer can be used
 - add link to report in README
 - search for TODOs and remove them when finished
@@ -30,14 +35,10 @@ TODO:
 - show data in report: if we have good correlation -> our model works well
 					- show cases where correlation is not so good --> model is not so good
 - prediction intervals only work if tree is big enough --> how big?
-- do trainings and compare results with uncertainty and without
 - Hyperparameter Optimization with scikit-learn
 	- Grid search
 	- Random search
 	- both with successive halving
-- look into the code here to see how the data recording is done: https://github.com/usegalaxy-eu/galaxy/tree/release_22.01_europe/lib/galaxy
-- look here: https://bioblend.readthedocs.io/en/latest/api_docs/galaxy/all.html#module-bioblend.galaxy.jobs
-- try 3 different seeds and avg over them
 - write in section further work in report: more features are needed for better prediction. At the moment only 2 relevant features
 
 - maybe try to include the category of the tool for the prediction?
