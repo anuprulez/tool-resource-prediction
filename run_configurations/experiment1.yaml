@@ -86,23 +86,242 @@ train10:
     random_state: 0
 
 #XGB
+##fastqc-0.72
+train11:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train12:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##ivar_trim-1.2.2
+train13:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train14:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##ivar_removereads-1.2.2
+train15:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train16:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##cutadapt-1.16.5
+train17:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train18:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##mimodd_reheader-0.1.8_1
+train19:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train20:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
 
+#Linear Regression
+##fastqc-0.72
+train21:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train22:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##ivar_trim-1.2.2
+train23:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train24:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##ivar_removereads-1.2.2
+train25:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train26:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##cutadapt-1.16.5
+train27:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train28:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##mimodd_reheader-0.1.8_1
+train29:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train30:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
 
-#train2:
-#  model_type: "lr"
-#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-#  seed: 0
-#  do_cross_validation: True
-#  model_params:
-#    {}
-
-#train3:
-#  model_type: "svr"
-#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-#  seed: 0
-#  do_cross_validation: False
-#  doStandardScale: False
-#  doHPO: False
-#  doLogTrafo: True
-#  model_params:
-#    {}
+#Support Vector Regression
+##fastqc-0.72
+train31:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train32:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##ivar_trim-1.2.2
+train33:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train34:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##ivar_removereads-1.2.2
+train35:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train36:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##cutadapt-1.16.5
+train37:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train38:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##mimodd_reheader-0.1.8_1
+train39:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-combined.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+train40:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}

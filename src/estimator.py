@@ -178,7 +178,8 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
             "create_times_train": create_times_train,
             "create_times_test": create_times_test
         }
-        save_train_and_test_data(**train_and_test_data_to_save)
+        # TODO: watch out that this is activated
+        # save_train_and_test_data(**train_and_test_data_to_save)
 
     return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test
 
@@ -193,6 +194,10 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
     r2_score = training_stats["r2_score"]
     model_type = run_config["model_type"]
     model_params = training_stats["model_params"]
+    scores = training_stats["scores"]
+    # If scores is not empty
+    if scores:
+        mean_cv_test_score = np.mean(scores["test_score"])
 
     if model_type == "rf" and "probability_uncertainty" in run_config:
         probability_uncertainty = run_config["probability_uncertainty"]
@@ -215,6 +220,9 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
         f.write(f"Mean squared error: {mean_squared_error}\n")
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write(f"R2 Score: {r2_score}\n")
+        # If scores is not empty
+        if scores:
+            f.write(f"Mean cross-validation test score: {mean_cv_test_score}\n")
         # With uncertainty
         # Only supported for RF
         if model_type == "rf" and "probability_uncertainty" in run_config:
@@ -286,8 +294,6 @@ def fit_with_cv(regressor, X_train, y_train):
     scores = cross_validate(regressor, X_train, y_train, verbose=2, return_train_score=True, return_estimator=True, scoring='r2')
     best_score_idx = np.argmax(scores["test_score"])
     best_regressor = scores["estimator"][best_score_idx]
-    mean_score = np.mean(scores["test_score"])
-    print(f"Mean cross-validation test score: {mean_score}")
     return best_regressor, scores
 
 
@@ -388,7 +394,7 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
 
     end_time = time.time()
     time_for_training_mins = (end_time - start_time) / 60
-    return regressor, time_for_training_mins
+    return regressor, time_for_training_mins, scores
 
 
 def plot_prediction_interval(sample_nr, actual_value, upper_bound, lower_bound, color='#2187bb',
@@ -422,7 +428,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
         # y_test = np.log1p(y_test)
 
     hyper_param_opt = run_config["doHPO"] if "doHPO" in run_config else False
-    regressor, time_for_training_mins = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
+    regressor, time_for_training_mins, scores = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
                                                   run_config=run_config)
 
     # tree.plot_tree(regressor.estimators_[0], feature_names=["Filesize", "Number_of_files", "Slots"], rounded=True)
@@ -448,6 +454,9 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
     root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
     r2_score = metrics.r2_score(y_test, y_pred)
+    if scores:
+        mean_score = np.mean(scores["test_score"])
+        print(f"Mean cross-validation test score: {mean_score}")
     print('Mean Absolute Error:', mean_abs_error)
     print('Mean Squared Error:', mean_squared_error)
     print('Root Mean Squared Error:', root_mean_squared_error)
@@ -460,7 +469,8 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
         "r2_score": r2_score,
         "time_for_training_mins": time_for_training_mins,
         "feature_importances": feature_importances,
-        "model_params": model_params
+        "model_params": model_params,
+        "scores": scores
     }
 
     # With uncertainty
@@ -641,6 +651,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
     y_pred, y_test, training_stats, regressor = train_and_predict(**train_and_test_data, **method_params)
     if save:
         save_training_results(y_pred, training_stats, **train_and_test_data, **method_params)
+        # TODO: watch out that this is activated
         # save_model_to_file(regressor, train_and_test_data, run_configuration)
 
 

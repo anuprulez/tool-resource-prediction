@@ -49,7 +49,7 @@ def plot_file_size_memory_bytes():
     filesize = "Filesize"
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
     # data_path = "../../processed_data/other_tools/smf_utils_estimate-energy-smf-v1.7-0_utils-v2.1.1-2.txt"
-    data_path = "../../processed_data/other_tools/lofreq_viterbi-2.1.3.1.txt"
+    data_path = "../../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
     data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')

@@ -1,4 +1,5 @@
 import estimator
+import time
 from process_data import *
 import argparse
 import yaml
@@ -59,6 +60,8 @@ if __name__ == '__main__':
     with open(args.run_config) as f:
         run_configs = yaml.load(f, Loader=SafeLoader)
     for key in tqdm(run_configs.keys()):
+        # Wait 2 seconds between each run to avoid that files are overwritten
+        time.sleep(2)
         run_configuration = run_configs[key]
         print("Following run config is used: ")
         print(run_configuration)
