@@ -7,7 +7,7 @@ train1:
   seed: 0
 #  probability_uncertainty: 0.9
   do_cross_validation: True
-  doLogTrafo: False
+#  doLogTrafo: True
   model_params:
     n_estimators: 200
     random_state: 0

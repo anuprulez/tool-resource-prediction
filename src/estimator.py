@@ -147,10 +147,10 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
 
     # doLogTrafo = run_config["doLogTrafo"] if "doLogTrafo" in run_config else False
     # if doLogTrafo:
-    #     pt = PowerTransformer()
-    #     X_train = pt.fit_transform(X_train_orig)
-    #     X_test = pt.transform(X_test_orig)
-    #     X_test_unscaled = pt.inverse_transform(X_test)
+    #     pt = PowerTransformer(method='box-cox', standardize=True)
+    #     X_train[:, 0] = pt.fit_transform(X_train[:, 0].reshape(-1, 1)).flatten()
+    #     X_test_orig[:, 0] = pt.transform(X_test_orig[:, 0].reshape(-1, 1)).flatten()
+    #     X_test_unscaled[:, 0] = pt.inverse_transform(X_test_unscaled[:, 0].reshape(-1, 1)).flatten()
 
     if save:
         X_train_to_save = X_train_orig.copy()
@@ -641,7 +641,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
     y_pred, y_test, training_stats, regressor = train_and_predict(**train_and_test_data, **method_params)
     if save:
         save_training_results(y_pred, training_stats, **train_and_test_data, **method_params)
-        save_model_to_file(regressor, train_and_test_data, run_configuration)
+        # save_model_to_file(regressor, train_and_test_data, run_configuration)
 
 
 def baseline_pipeline(run_configuration, save: bool):

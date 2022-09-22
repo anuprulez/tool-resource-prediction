@@ -47,8 +47,10 @@ def plot_memory_bytes_over_time():
 def plot_file_size_memory_bytes():
     memory_bytes = "Memory_bytes"
     filesize = "Filesize"
-    data = pd.read_csv("../../processed_data/other_tools/smf_utils_estimate-energy-smf-v1.7-0_utils-v2.1.1-2.txt", ",",
-                       names=["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"])
+    column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
+    # data_path = "../../processed_data/other_tools/smf_utils_estimate-energy-smf-v1.7-0_utils-v2.1.1-2.txt"
+    data_path = "../../processed_data/other_tools/lofreq_viterbi-2.1.3.1.txt"
+    data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
     data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
