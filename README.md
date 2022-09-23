@@ -52,9 +52,10 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
   dataset_path: <path to the dataset that you want to use for training/evaluation/baseline>
   seed: <seed for splitting data into training and test set in case of training>
   probability_uncertainty (optional): probability used for uncertainty prediction in range [0,1]
-  doStandardScale (optional): scale the inputs using StandardScaler (default --> False)
-  doHPO (optional): do an Hyperparameter Optimization (default --> false)
-  do_cross_validation (optional): do Cross Validation (default --> false)
+  doStandardScale (optional): set True to scale the inputs using StandardScaler (default --> False)
+  doHPO (optional): set True to do Hyperparameter Optimization (default --> false)
+  do_cross_validation (optional): set True to do Cross Validation (default --> false)
+  remove_outliers (optional): set True to remove outliers from the data before training (default --> false)Outliers are data points outside of mean +- 2 * standard deviation
   model_params:
       <parameters for the model you want to use>
 ```
@@ -88,8 +89,6 @@ train2:
 ```
   - first parameter: path to the run configuration file
   - (optional) --save: save the training results and the trained model to a file (default: false)
-  - (optional) --remove_outliers: set to remove outliers from the data (default: false). This only works for the training and not evaluation.
-    Outliers are data points outside of mean +- 2 * standard deviation
 ```
 The model predicts the memory bytes in GB
 
@@ -101,15 +100,16 @@ The training results, train set & test set are saved to the "saved_data" directo
 The training results hereby have the following format:
 ```yaml
 Tool name: ...
-Dataset_path: ...
-Seed: ...
+Run configuratiom: <the keys and values of the used run configuration>
 Model_params: ...
 Time for training in mins: ...
+Percentage above mean + 2 * std that got removed: <only if remove_outliers was True in run configuration>
 Feature importance: <feature importances for Filesize, Number_of_files, Slots>
 Mean absolute error: ...
 Mean squared error: ...
 Root mean squared error: ...
 R2 Score: ...
+Mean cross-validation test score: <only if cross-validation was done>
 <if model type was Random Forest and a probability was given as parameter the following metrics are also given>
 Mean absolute error with uncertainty: ...
 Mean squared error with uncertainty: ...
