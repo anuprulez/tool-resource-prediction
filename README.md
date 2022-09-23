@@ -158,3 +158,5 @@ There are several files that give us more information about the dataset and the 
 - [faulty data](processed_data/dataset_labeled/faulty_data.txt):
   This file lists all the entries in the dataset that have faulty values for memory_bytes. 
   Faulty because they exceed the maximum possible memory size assigned by Galaxy.
+- [num faulty entries](processed_data/num_entries_per_tool_faulty_data.csv):
+  This file lists the number of faulty entries per tool in the dataset.
