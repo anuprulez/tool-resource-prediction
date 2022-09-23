@@ -55,7 +55,7 @@ Tool_id, Filesize (in bytes), Number_of_files, Slots, Memory_bytes (in bytes), C
   doStandardScale (optional): set True to scale the inputs using StandardScaler (default --> False)
   doHPO (optional): set True to do Hyperparameter Optimization (default --> false)
   do_cross_validation (optional): set True to do Cross Validation (default --> false)
-  remove_outliers (optional): set True to remove outliers from the data before training (default --> false)Outliers are data points outside of mean +- 2 * standard deviation
+  remove_outliers (optional): set True to remove outliers from the data before training (default --> false). Outliers are data points above mean + 2 * standard deviation
   model_params:
       <parameters for the model you want to use>
 ```
