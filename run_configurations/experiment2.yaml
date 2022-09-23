@@ -1,0 +1,294 @@
+#Random Forest
+##rna_star/2.7.5b
+train1:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train1.2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bowtie2/2.3.4.3
+train2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train2.2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##hisat2/2.1.0
+train3:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train3.2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bwa_mem/0.7.17.1
+train4:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train4.2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+#XGB
+##rna_star/2.7.5b
+train5:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train5.2:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bowtie2/2.3.4.3
+train6:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train6.2:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##hisat2/2.1.0
+train7:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train7.2:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bwa_mem/0.7.17.1
+train8:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    n_estimators: 200
+    random_state: 0
+train8.2:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#Linear Regression
+##rna_star/2.7.5b
+train9:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train9.2:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##bowtie2/2.3.4.3
+train10:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train10.2:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##hisat2/2.1.0
+train11:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train11.2:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##bwa_mem/0.7.17.1
+train12:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train12.2:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+
+#Support Vector Regression
+##rna_star/2.7.5b
+train13:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train13.2:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##bowtie2/2.3.4.3
+train14:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train14.2:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bowtie2-2.3.4.3/bowtie2-2.3.4.3-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##hisat2/2.1.0
+train15:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train15.2:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/hisat2-2.1.0/hisat2-2.1.0-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+##bwa_mem/0.7.17.1
+train16:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}
+train16.2:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 2 - Transformations/data/bwa_mem-0.7.17.1/bwa_mem-0.7.17.1-ready.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}

@@ -24,14 +24,14 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\processed_data\pearson_corr_scores.csv">
+        <entry key="\processed_data\num_entries_per_tool_faulty_data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\src\saved_data\num_entries_per_tool.csv">
+        <entry key="\processed_data\pearson_corr_scores.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

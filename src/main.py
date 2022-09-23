@@ -18,10 +18,6 @@ if __name__ == '__main__':
                         action=argparse.BooleanOptionalAction,
                         default=False,
                         help="Set to evaluate the baseline on the run configuration (default: false). The baseline is given by the tool destination file from galaxy.")
-    parser.add_argument("--remove_outliers",
-                        action=argparse.BooleanOptionalAction,
-                        default=False,
-                        help="Set to remove outliers from the data (default: false). This means data outside of mean +- 2 * standard deviation gets removed")
     parser.add_argument('--model',
                         help="The path to the model (ONNX-file) you want to load and predict on")
     args = parser.parse_args()
@@ -60,17 +56,19 @@ if __name__ == '__main__':
     with open(args.run_config) as f:
         run_configs = yaml.load(f, Loader=SafeLoader)
     for key in tqdm(run_configs.keys()):
-        # Wait 2 seconds between each run to avoid that files are overwritten
-        time.sleep(2)
         run_configuration = run_configs[key]
         print("Following run config is used: ")
         print(run_configuration)
+        remove_outliers = run_configuration["remove_outliers"] if "remove_outliers" in run_configuration else False
         if args.baseline:
             print("Run baseline...")
             estimator.baseline_pipeline(run_configuration=run_configuration, save=args.save)
         elif args.model:
             print("Evaluate given model...")
-            estimator.evaluate_model_pipeline(run_configuration=run_configuration, model_path=args.model, save=args.save)
+            estimator.evaluate_model_pipeline(run_configuration=run_configuration, model_path=args.model,
+                                              save=args.save)
         else:
             print("Train model...")
-            estimator.training_pipeline(run_configuration=run_configuration, remove_outliers=args.remove_outliers, save=args.save)
+            estimator.training_pipeline(run_configuration=run_configuration, remove_outliers=remove_outliers, save=args.save)
+        # Wait 2 seconds between each run to avoid that files are overwritten
+        time.sleep(2)

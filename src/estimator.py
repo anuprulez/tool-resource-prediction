@@ -1,3 +1,4 @@
+import pprint
 import numpy
 from matplotlib import pyplot as plt
 from onnxconverter_common import FloatTensorType
@@ -118,19 +119,20 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
 
     if remove_outliers:
         print("Outliers get removed.")
-        # Find entries that are outside of mean +- 2*std
+        # Find entries that are above of mean + 2*std
         upper_threshold = np.mean(y) + 2 * np.std(y)
-        lower_threshold = np.mean(y) - 2 * np.std(y)
-        remove_indices_train = np.where(np.logical_or(y_train > upper_threshold, y_train < lower_threshold))
+        # lower_threshold = np.mean(y) - 2 * np.std(y)
+        remove_indices_train = np.where(y_train > upper_threshold)
         # Remove those entries (only in train set)
         X_train_orig = np.delete(X_train_orig, remove_indices_train, axis=0)
         y_train = np.delete(y_train, remove_indices_train)
-        create_times_train = np.delete(X_train_orig, remove_indices_train, axis=0)
+        create_times_train = np.delete(create_times_train, remove_indices_train, axis=0)
 
         nr_samples_outside = len(remove_indices_train[0])
-        percentage_within = 1 - (nr_samples_outside / len(y_train))
-        print(f"Percentage data within mean +- 2 * std: {percentage_within}")
+        percentage_above = nr_samples_outside / len(y_train)
+        print(f"Percentage above mean + 2 * std: {percentage_above * 100}%")
     else:
+        percentage_above = 0
         print("Outliers are not removed.")
 
     if doStandardScale:
@@ -181,7 +183,7 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
         # TODO: watch out that this is activated
         # save_train_and_test_data(**train_and_test_data_to_save)
 
-    return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test
+    return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test, percentage_above
 
 
 def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, X_test_unscaled, y_train,
@@ -211,10 +213,12 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
     print(f"Save training results to file {filename_str}")
     with open(filename_str, 'a+') as f:
         f.write(f"Tool name: {tool_name}\n")
-        f.write(f"Dataset_path: {run_config['dataset_path']}\n")
-        f.write(f"Seed: {seed}\n")
+        f.write("Run configuration:\n")
+        f.write(f"{pprint.pformat(run_config, indent=4)}\n")
         f.write(f"Model_params: {json.dumps(model_params)}\n")
         f.write(f"Time for training in mins: {time_for_training_mins}\n")
+        if "percentage_above" in training_stats:
+            f.write(f"Percentage above mean + 2 * std that got removed: {training_stats['percentage_above']*100}%\n")
         f.write(f"Feature importance: {feature_importances}\n")
         f.write(f"Mean absolute error: {mean_abs_error}\n")
         f.write(f"Mean squared error: {mean_squared_error}\n")
@@ -421,9 +425,13 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     np.set_printoptions(threshold=sys.maxsize)
 
     doLogTrafo = run_config["doLogTrafo"] if "doLogTrafo" in run_config else False
-    # if doLogTrafo:
-    #     X_train[:, 0] = np.log1p(X_train[:, 0])
-    #     X_test[:, 0] = np.log1p(X_test[:, 0])
+    if doLogTrafo:
+        pt = PowerTransformer()
+        X_train[:, 0] = pt.fit_transform(X_train[:, 0].reshape(-1, 1)).flatten()
+        X_test[:, 0] = pt.transform(X_test[:, 0].reshape(-1, 1)).flatten()
+
+        # X_train[:, 0] = np.log1p(X_train[:, 0])
+        # X_test[:, 0] = np.log1p(X_test[:, 0])
         # y_train = np.log1p(y_train)
         # y_test = np.log1p(y_test)
 
@@ -444,9 +452,12 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     print("Predict...")
     y_pred = regressor.predict(X_test)
 
-    # if doLogTrafo:
-    #     X_train[:, 0] = np.expm1(X_train[:, 0])
-    #     X_test[:, 0] = np.expm1(X_test[:, 0])
+    if doLogTrafo:
+        X_train[:, 0] = pt.inverse_transform(X_train[:, 0].reshape(-1, 1)).flatten()
+        X_test[:, 0] = pt.inverse_transform(X_test[:, 0].reshape(-1, 1)).flatten()
+
+        # X_train[:, 0] = np.expm1(X_train[:, 0])
+        # X_test[:, 0] = np.expm1(X_test[:, 0])
         # y_test = np.expm1(y_test)
         # y_pred = np.expm1(y_pred)
 
@@ -631,7 +642,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         "remove_outliers": remove_outliers,
     }
     # Data loading
-    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test = get_train_and_test_set(
+    X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test , percentage_above = get_train_and_test_set(
         **method_params,
         save=save)
     train_and_test_data = {
@@ -650,6 +661,8 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
     # Model training and predicting
     y_pred, y_test, training_stats, regressor = train_and_predict(**train_and_test_data, **method_params)
     if save:
+        if remove_outliers:
+            training_stats["percentage_above"] = percentage_above
         save_training_results(y_pred, training_stats, **train_and_test_data, **method_params)
         # TODO: watch out that this is activated
         # save_model_to_file(regressor, train_and_test_data, run_configuration)

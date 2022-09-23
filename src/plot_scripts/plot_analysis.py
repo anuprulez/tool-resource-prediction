@@ -45,17 +45,24 @@ def plot_memory_bytes_over_time():
 
 
 def plot_file_size_memory_bytes():
+    doLogTrafo = True
     memory_bytes = "Memory_bytes"
     filesize = "Filesize"
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
     # data_path = "../../processed_data/other_tools/smf_utils_estimate-energy-smf-v1.7-0_utils-v2.1.1-2.txt"
-    data_path = "../../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
+    # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/mimodd_reheader-0.1.8_1/Ready/mimodd_reheader-0.1.8_1-only-valid.txt"
+    # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/fastqc-0.72/Ready/fastqc-0.72-only-valid.txt"
+    # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-only-valid.txt"
+    # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
+    # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
+    data_path = "../../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
     data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
-    data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
-    # data[memory_bytes] = np.log1p(data[memory_bytes].values / 1000000000).astype('float64')
-    # data[filesize] = np.log1p(data[filesize].values / 1000000000).astype('float64')
+    data[memory_bytes] = (data[memory_bytes].values / 1000000000).astype('float64')
+    if doLogTrafo:
+        data[filesize] = np.log1p(data[filesize].values).astype('float64')
+        # data[memory_bytes] = np.log1p(data[memory_bytes].values / 1000000000).astype('float64')
 
     scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)
     # scatter_plt = sns.histplot(data=data, x=filesize)
