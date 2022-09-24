@@ -25,11 +25,12 @@ def calc_pearson_corr(run_config):
     # memory_bytes = data["Memory_bytes"] / 1000000000
     # filesize = data["Filesize"] / 1000000000
     pearson_corr = stats.pearsonr(filesize, memory_bytes)
+    print("Tool: " + data["Tool_id"][0])
     print("Pearson correlation:", pearson_corr)
 
-with open("../run_configurations/specific.yaml") as f:
+with open("../run_configurations/experiment4-1.yaml") as f:
     run_configs = yaml.load(f, Loader=SafeLoader)
 for key in run_configs.keys():
     run_configuration = run_configs[key]
-    calc_avg_and_std(run_config=run_configuration)
+    # calc_avg_and_std(run_config=run_configuration)
     calc_pearson_corr(run_config=run_configuration)

@@ -1,5 +1,5 @@
 #train1:
-#  model_type: "rf"
+#  model_type: "svr"
 ##  dataset_path: "saved_data/testset_trinity-2.9.1_2022_09_12-12_24_25_PM.txt"
 #  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
 ##  dataset_path: "../processed_data/example_data/hisat2_transformed.txt"
@@ -33,20 +33,36 @@
 #  model_params:
 #    {}
 
-train1.2:
-  model_type: "rf"
-  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+train3:
+  model_type: "lr"
+  dataset_path: "../processed_data/sampled_data/Cut1_20000_samples_seed_0.txt"
   seed: 0
   do_cross_validation: True
-  remove_outliers: True
+  doLogTrafo: True
   model_params:
-    n_estimators: 200
-    random_state: 0
-train1:
-  model_type: "rf"
-  dataset_path: "../experiments/Experiment 2 - Transformations/data/rna_star-2.7.5b/rna_star-2.7.5b-ready.txt"
+    {}
+train4:
+  model_type: "lr"
+  dataset_path: "../processed_data/sampled_data/Cut1_20000_samples_seed_0.txt"
   seed: 0
   do_cross_validation: True
+  doLogTrafo: False
   model_params:
-    n_estimators: 200
-    random_state: 0
+    {}
+
+train11:
+  model_type: "lr"
+  dataset_path: "../processed_data/sampled_data/snpSift_extractFields-4.3+t.galaxy0_20000_samples_seed_0.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: True
+  model_params:
+    {}
+train12:
+  model_type: "lr"
+  dataset_path: "../processed_data/sampled_data/snpSift_extractFields-4.3+t.galaxy0_20000_samples_seed_0.txt"
+  seed: 0
+  do_cross_validation: True
+  doLogTrafo: False
+  model_params:
+    {}

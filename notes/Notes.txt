@@ -77,6 +77,7 @@ Infos:
 	- @anupkumar:matrix.org
 - Handling big csv Files: https://www.gigasheet.co/ or better https://csviewer.com/
 - Old Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
+- Viewing CSV files: https://limonte.github.io/csv-viewer-online/
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out

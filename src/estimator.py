@@ -426,14 +426,12 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
 
     doLogTrafo = run_config["doLogTrafo"] if "doLogTrafo" in run_config else False
     if doLogTrafo:
-        pt = PowerTransformer()
-        X_train[:, 0] = pt.fit_transform(X_train[:, 0].reshape(-1, 1)).flatten()
-        X_test[:, 0] = pt.transform(X_test[:, 0].reshape(-1, 1)).flatten()
+        # pt = PowerTransformer()
+        # X_train[:, 0] = pt.fit_transform(X_train[:, 0].reshape(-1, 1)).flatten()
+        # X_test[:, 0] = pt.transform(X_test[:, 0].reshape(-1, 1)).flatten()
 
-        # X_train[:, 0] = np.log1p(X_train[:, 0])
-        # X_test[:, 0] = np.log1p(X_test[:, 0])
-        # y_train = np.log1p(y_train)
-        # y_test = np.log1p(y_test)
+        X_train[:, 0] = np.log1p(X_train[:, 0])
+        X_test[:, 0] = np.log1p(X_test[:, 0])
 
     hyper_param_opt = run_config["doHPO"] if "doHPO" in run_config else False
     regressor, time_for_training_mins, scores = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
@@ -453,13 +451,11 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     y_pred = regressor.predict(X_test)
 
     if doLogTrafo:
-        X_train[:, 0] = pt.inverse_transform(X_train[:, 0].reshape(-1, 1)).flatten()
-        X_test[:, 0] = pt.inverse_transform(X_test[:, 0].reshape(-1, 1)).flatten()
+        # X_train[:, 0] = pt.inverse_transform(X_train[:, 0].reshape(-1, 1)).flatten()
+        # X_test[:, 0] = pt.inverse_transform(X_test[:, 0].reshape(-1, 1)).flatten()
 
-        # X_train[:, 0] = np.expm1(X_train[:, 0])
-        # X_test[:, 0] = np.expm1(X_test[:, 0])
-        # y_test = np.expm1(y_test)
-        # y_pred = np.expm1(y_pred)
+        X_train[:, 0] = np.expm1(X_train[:, 0])
+        X_test[:, 0] = np.expm1(X_test[:, 0])
 
     mean_abs_error = metrics.mean_absolute_error(y_test, y_pred)
     mean_squared_error = metrics.mean_squared_error(y_test, y_pred)

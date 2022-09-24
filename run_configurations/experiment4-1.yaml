@@ -1,0 +1,177 @@
+#Random Forest
+##lofreq_indelqual/2.1.4
+train1:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bamleftalign/1.3.1
+train4:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##fastqc/0.73
+train6:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/fastqc-0.73.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##umi_tools_extract/0.5.5.1
+train8:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/umi_tools_extract-0.5.5.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bedtools_intersectbed/2.30.0
+train10:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bedtools_intersectbed-2.30.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#XGB
+##lofreq_indelqual/2.1.4
+train12:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bamleftalign/1.3.1
+train14:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##fastqc/0.73
+train16:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/fastqc-0.73.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##umi_tools_extract/0.5.5.1
+train18:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/umi_tools_extract-0.5.5.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bedtools_intersectbed/2.30.0
+train20:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bedtools_intersectbed-2.30.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#Linear Regression
+##lofreq_indelqual/2.1.4
+train22:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bamleftalign/1.3.1
+train24:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##fastqc/0.73
+train26:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/fastqc-0.73.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##umi_tools_extract/0.5.5.1
+train28:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/umi_tools_extract-0.5.5.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bedtools_intersectbed/2.30.0
+train30:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bedtools_intersectbed-2.30.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+
+#Support Vector Regression
+##lofreq_indelqual/2.1.4
+train32:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bamleftalign/1.3.1
+train34:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##fastqc/0.73
+train36:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/fastqc-0.73.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##umi_tools_extract/0.5.5.1
+train38:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/umi_tools_extract-0.5.5.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bedtools_intersectbed/2.30.0
+train40:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.1 Moderate-high correlation/data/Ready/bedtools_intersectbed-2.30.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
