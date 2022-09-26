@@ -38,7 +38,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\src\saved_data\pearson_corr_scores_min_10000_samples.csv">
+        <entry key="\processed_data\pearson_corr_scores_min_10000_samples.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

@@ -33,36 +33,11 @@
 #  model_params:
 #    {}
 
-train3:
-  model_type: "lr"
-  dataset_path: "../processed_data/sampled_data/Cut1_20000_samples_seed_0.txt"
+train1:
+  model_type: "rf"
+  dataset_path: "../processed_data/other_tools/fastp-0.20.1.txt"
   seed: 0
-  do_cross_validation: True
-  doLogTrafo: True
+  do_cross_validation: False
   model_params:
-    {}
-train4:
-  model_type: "lr"
-  dataset_path: "../processed_data/sampled_data/Cut1_20000_samples_seed_0.txt"
-  seed: 0
-  do_cross_validation: True
-  doLogTrafo: False
-  model_params:
-    {}
-
-train11:
-  model_type: "lr"
-  dataset_path: "../processed_data/sampled_data/snpSift_extractFields-4.3+t.galaxy0_20000_samples_seed_0.txt"
-  seed: 0
-  do_cross_validation: True
-  doLogTrafo: True
-  model_params:
-    {}
-train12:
-  model_type: "lr"
-  dataset_path: "../processed_data/sampled_data/snpSift_extractFields-4.3+t.galaxy0_20000_samples_seed_0.txt"
-  seed: 0
-  do_cross_validation: True
-  doLogTrafo: False
-  model_params:
-    {}
+    n_estimators: 200
+    random_state: 0

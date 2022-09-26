@@ -1,0 +1,177 @@
+#Random Forest
+##fastp/0.20.1
+train1:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/fastp-0.20.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##vcf2tsv/1.0.0_rc3
+train4:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##rna_star/2.7.2b
+train6:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bg_diamond/2.0.8.0
+train8:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/bg_diamond-2.0.8.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##samtools_idxstats/2.0.3
+train10:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/samtools_idxstats-2.0.3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#XGB
+##fastp/0.20.1
+train12:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/fastp-0.20.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##vcf2tsv/1.0.0_rc3
+train14:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##rna_star/2.7.2b
+train16:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##bg_diamond/2.0.8.0
+train18:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/bg_diamond-2.0.8.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##samtools_idxstats/2.0.3
+train20:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/samtools_idxstats-2.0.3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#Linear Regression
+##fastp/0.20.1
+train22:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/fastp-0.20.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##vcf2tsv/1.0.0_rc3
+train24:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.2b
+train26:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bg_diamond/2.0.8.0
+train28:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/bg_diamond-2.0.8.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##samtools_idxstats/2.0.3
+train30:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/samtools_idxstats-2.0.3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+
+#Support Vector Regression
+##fastp/0.20.1
+train32:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/fastp-0.20.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##vcf2tsv/1.0.0_rc3
+train34:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.2b
+train36:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bg_diamond/2.0.8.0
+train38:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/bg_diamond-2.0.8.0.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##samtools_idxstats/2.0.3
+train40:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 4 - Correlation analysis/4.2 Low-moderate correlation/data/samtools_idxstats-2.0.3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}

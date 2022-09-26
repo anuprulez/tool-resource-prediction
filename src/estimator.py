@@ -451,6 +451,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     y_pred = regressor.predict(X_test)
 
     if doLogTrafo:
+        print("Do LogTrafo!")
         # X_train[:, 0] = pt.inverse_transform(X_train[:, 0].reshape(-1, 1)).flatten()
         # X_test[:, 0] = pt.inverse_transform(X_test[:, 0].reshape(-1, 1)).flatten()
 

@@ -17,8 +17,6 @@ TODO:
 		- include plots of data distributions
 - report: num_samples per tool differ very much
 - removing outliers: cut data +- 2 * std or only data over + 2*std?
-- create CSV File which lists pearson correlation for all tools
-	- include this in report
 - include comparison to Kamalis data and cite
 	- try hisat2 data and include it in report as well as bowtie2
 - if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation
@@ -78,6 +76,7 @@ Infos:
 - Handling big csv Files: https://www.gigasheet.co/ or better https://csviewer.com/
 - Old Dataset: https://usegalaxy.eu/u/kumara/h/tool-resource-prediction
 - Viewing CSV files: https://limonte.github.io/csv-viewer-online/
+- Python Plot Types: https://www.python-graph-gallery.com/connected-scatter-plot/
 
 group tools that have different version or make a distinction between them?
 Is there a big variance between versions for a specific tool? Do an analysis on that and find out

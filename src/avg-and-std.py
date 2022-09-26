@@ -28,7 +28,7 @@ def calc_pearson_corr(run_config):
     print("Tool: " + data["Tool_id"][0])
     print("Pearson correlation:", pearson_corr)
 
-with open("../run_configurations/experiment4-1.yaml") as f:
+with open("../run_configurations/specific.yaml") as f:
     run_configs = yaml.load(f, Loader=SafeLoader)
 for key in run_configs.keys():
     run_configuration = run_configs[key]
