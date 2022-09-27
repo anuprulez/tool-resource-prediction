@@ -1,0 +1,75 @@
+#Random Forest
+##bowtie2 (Kamali)
+train1:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/bowtie2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##hisat2 (Kamali)
+train2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/hisat2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#XGB
+##bowtie2 (Kamali)
+train3:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/bowtie2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+##hisat2 (Kamali)
+train4:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/hisat2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    n_estimators: 200
+    random_state: 0
+
+#Linear Regression
+##bowtie2 (Kamali)
+train5:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/bowtie2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##hisat2 (Kamali)
+train6:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/hisat2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+
+#Support Vector Regression
+##bowtie2 (Kamali)
+train7:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/bowtie2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##hisat2 (Kamali)
+train8:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/hisat2_transformed.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}

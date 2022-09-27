@@ -35,7 +35,7 @@
 
 train1:
   model_type: "rf"
-  dataset_path: "../processed_data/other_tools/fastp-0.20.1.txt"
+  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/our data/hisat2-2.2.1.txt"
   seed: 0
   do_cross_validation: False
   model_params:

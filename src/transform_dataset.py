@@ -1,10 +1,11 @@
 import pandas as pd
+import math
 
-data = pd.read_csv('../processed_data/example_data/hisat2.csv')
+data = pd.read_csv('../processed_data/kamali\'s data/hisat2.csv')
 
-with open('saved_data/hisat2_transformed.txt', 'a+') as f:
+with open('saved_data/bwa_mem_0.7.15.1_transformed.txt', 'a+') as f:
     for idx, entry in data.iterrows():
-        f.write("hisat2,")
+        f.write("bwa_mem_0.7.15.1,")
 
         # bowtie2
         # own_file_size = int(entry[1])
@@ -19,6 +20,8 @@ with open('saved_data/hisat2_transformed.txt', 'a+') as f:
         f.write(f"{sum_filesize},")
         num_files = (1 if own_file_size > 0 else 0) + (1 if input_1_size > 0 else 0) + (1 if input_2_size > 0 else 0)
         f.write(f"{num_files},")
+
+
         # Cores is assigned 8 by Galaxy for bowtie2
         # f.write("8,")
         # Cores is assigned 8 by Galaxy for hisat2

@@ -45,7 +45,7 @@ def plot_memory_bytes_over_time():
 
 
 def plot_file_size_memory_bytes():
-    doLogTrafo = True
+    doLogTrafo = False
     memory_bytes = "Memory_bytes"
     filesize = "Filesize"
     column_names = ["Tool_id", "Filesize", "Number_of_files", "Slots", "Memory_bytes", "Create_time"]
@@ -55,7 +55,8 @@ def plot_file_size_memory_bytes():
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_trim-1.2.2/Ready/ivar_trim-1.2.2-only-valid.txt"
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
-    data_path = "../../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
+    # data_path = "../../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
+    data_path = "../../processed_data/kamali's data/hisat2_transformed.txt"
     data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
@@ -67,11 +68,13 @@ def plot_file_size_memory_bytes():
     scatter_plt = sns.scatterplot(data=data, x=filesize, y=memory_bytes)
     # scatter_plt = sns.histplot(data=data, x=filesize)
     scatter_plt.set_xlabel(filesize + " in GB")
-    scatter_plt.set_ylabel(memory_bytes + " in GB")
+    scatter_plt.set_ylabel("Memory bytes in GB")
     scatter_plt.set(title=data["Tool_id"].iloc[0])
     plt.show()
 
 
 if __name__ == "__main__":
+    sns.set_style("darkgrid")
+    sns.set_palette(sns.color_palette("Set2"))
     # plot_memory_bytes_over_time()
     plot_file_size_memory_bytes()

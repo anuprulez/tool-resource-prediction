@@ -24,6 +24,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\processed_data\kamali's data\bowtie2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\processed_data\kamali's data\bwa_mem_0.7.15.1_example.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\processed_data\kamali's data\hisat2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\processed_data\num_entries_per_tool_faulty_data.csv">
           <value>
             <Attribute>

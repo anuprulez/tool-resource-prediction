@@ -8,11 +8,11 @@ from matplotlib import pyplot as plt
 # # df_num_entries = pd.concat([df_num_entries, df_entry], ignore_index=True)
 results_rf = [0.96, 0.76]
 
-X = ["fastp/0.20.1", "vcf2tsv/1.0.0_rc3", "rna_star/2.7.2b", "bg_diamond/2.0.8.0", "samtools_idxstats/2.0.3"]
-rf_scores = [0.61, 0.09, -0.18, 0.01, -0.41]
-xgb_scores = [0.65, -0.12, -0.22, -0.43, -0.63]
-lr_scores = [0.21, 0.14, 0.01, 0.44, 0.01]
-svr_scores = [0.63, 0.07, 0.01, 0.09, -0.02]
+X = ["bowtie2", "hisat2"]
+rf_scores = [0.90, 0.75]
+xgb_scores = [0.88, 0.72]
+lr_scores = [0.38, 0.42]
+svr_scores = [0.87, 0.55]
 
 X_axis = np.arange(len(X), 0, -1) * 3
 
@@ -37,6 +37,6 @@ plt.xlabel("R2 Score")
 # plt.xlabel("Tools")
 # plt.ylabel("R2 Score")
 
-plt.title("Results for data with low to moderate correlation")
+plt.title("Results for Kamali's data")
 plt.legend()
 plt.show()
