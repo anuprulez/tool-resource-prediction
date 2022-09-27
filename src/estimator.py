@@ -5,6 +5,9 @@ from onnxconverter_common import FloatTensorType
 from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.model_selection import cross_validate
+# explicitly require this experimental feature to access HalvingGirdSearchCV
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingGridSearchCV
 from sklearn import metrics
 from sklearn import tree
 import xgboost as xgb
@@ -181,7 +184,7 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
             "create_times_test": create_times_test
         }
         # TODO: watch out that this is activated
-        # save_train_and_test_data(**train_and_test_data_to_save)
+        save_train_and_test_data(**train_and_test_data_to_save)
 
     return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test, percentage_above
 
@@ -196,10 +199,11 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
     r2_score = training_stats["r2_score"]
     model_type = run_config["model_type"]
     model_params = training_stats["model_params"]
-    scores = training_stats["scores"]
+    cv_results = training_stats["cv_results"]
     # If scores is not empty
-    if scores:
-        mean_cv_test_score = np.mean(scores["test_score"])
+    if cv_results:
+        if "test_score" in cv_results:
+            mean_cv_test_score = np.mean(cv_results["test_score"])
 
     if model_type == "rf" and "probability_uncertainty" in run_config:
         probability_uncertainty = run_config["probability_uncertainty"]
@@ -215,7 +219,7 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
         f.write(f"Tool name: {tool_name}\n")
         f.write("Run configuration:\n")
         f.write(f"{pprint.pformat(run_config, indent=4)}\n")
-        f.write(f"Model_params: {json.dumps(model_params)}\n")
+        f.write(f"Model_params: {pprint.pformat(model_params, indent=4)}\n")
         f.write(f"Time for training in mins: {time_for_training_mins}\n")
         if "percentage_above" in training_stats:
             f.write(f"Percentage above mean + 2 * std that got removed: {training_stats['percentage_above']*100}%\n")
@@ -225,8 +229,11 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
         f.write(f"Root mean squared error: {root_mean_squared_error}\n")
         f.write(f"R2 Score: {r2_score}\n")
         # If scores is not empty
-        if scores:
-            f.write(f"Mean cross-validation test score: {mean_cv_test_score}\n")
+        if cv_results:
+            if "test_score" in cv_results:
+                f.write(f"Mean cross-validation test score: {mean_cv_test_score}\n")
+        f.write("CV Results:\n")
+        f.write(f"{pprint.pformat(cv_results, indent=4)}\n")
         # With uncertainty
         # Only supported for RF
         if model_type == "rf" and "probability_uncertainty" in run_config:
@@ -303,34 +310,36 @@ def fit_with_cv(regressor, X_train, y_train):
 
 # Fit using HPO
 def fit_with_hpo(regressor, X_train, y_train, param_grid):
-    print("Do Hyperparameter Optimization on following parameter grid:")
+    print("Do Hyperparameter Optimization using HalvingGridSearchCV on following parameter grid:")
     print(param_grid)
-    clf = GridSearchCV(regressor, param_grid, verbose=2, n_jobs=2, scoring='r2')
-    clf.fit(X_train, y_train)
-    regressor = clf.best_estimator_
-    return regressor
+    halvingGridSearch = HalvingGridSearchCV(estimator=regressor, param_grid=param_grid, factor=2, n_jobs=-1, verbose=2)
+    halvingGridSearch.fit(X_train, y_train)
+    regressor = halvingGridSearch.best_estimator_
+    cv_results = halvingGridSearch.cv_results_
+    return regressor, cv_results
 
 
 def fit_random_forest(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Random Forest...")
-    scores = {}
+    cv_results = {}
     # criterion='absolute_error', bootstrap=False, warm_start=True
     regressor = RandomForestRegressor(**run_config["model_params"], verbose=2)
     if do_hyper_param_opt:
-        param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
-                       'criterion': ['absolute_error', 'poisson', 'squared_error']}
-        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+        # param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
+        #                'criterion': ['absolute_error', 'poisson', 'squared_error']}
+        param_grid = {'max_depth': np.arange(1, 3), 'n_estimators': [50, 100, 200, 400]}
+        regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
-        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+        regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
     else:
         regressor.fit(X_train, y_train)
-    return regressor, scores
+    return regressor, cv_results
 
 
 def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit XGB model...")
     xgb.set_config(verbosity=2)
-    scores = {}
+    cv_results = {}
 
     # TODO: maybe try XGB RF Regressor
     # xgb.XGBRFRegressor
@@ -339,43 +348,43 @@ def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
         # From 0.03 to 0.3
         lr_space = np.logspace(-2, -1, num=10) * 3
         param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400], 'learning_rate': lr_space}
-        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+        regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
-        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+        regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
     else:
         regressor.fit(X_train, y_train)
-    return regressor, scores
+    return regressor, cv_results
 
 
 def fit_linear_regressor(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Linear Regressor...")
-    scores = {}
+    cv_results = {}
     regressor = LinearRegression(copy_X=True, **run_config["model_params"])
     if do_hyper_param_opt:
         param_grid = {}
-        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+        regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
-        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+        regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
     else:
         regressor.fit(X_train, y_train)
-    return regressor, scores
+    return regressor, cv_results
 
 
 def fit_svr(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Support Vector Regressor...")
-    scores = {}
+    cv_results = {}
 
     regressor = SVR(cache_size=1000, verbose=True, **run_config["model_params"])
     if do_hyper_param_opt:
         # From 0.00001 to 0.1
         epsilon_space = np.logspace(-5, -1, num=15)
         param_grid = {'epsilon': epsilon_space}
-        regressor = fit_with_hpo(regressor, X_train, y_train, param_grid)
+        regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
-        regressor, scores = fit_with_cv(regressor, X_train, y_train)
+        regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
     else:
         regressor.fit(X_train, y_train)
-    return regressor, scores
+    return regressor, cv_results
 
 
 def fit_model(X_train, y_train, hyper_param_opt, run_config):
@@ -386,19 +395,19 @@ def fit_model(X_train, y_train, hyper_param_opt, run_config):
     if do_cross_validation and hyper_param_opt:
         raise ValueError("do_cross_validation and doHPO are both set to true in the run configuration. Invalid combination. Set only one of them to true")
     if model_type == "rf":
-        regressor, scores = fit_random_forest(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+        regressor, cv_results = fit_random_forest(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
     elif model_type == "xgb":
-        regressor, scores = fit_xgb(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+        regressor, cv_results = fit_xgb(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
     elif model_type == "lr":
-        regressor, scores = fit_linear_regressor(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+        regressor, cv_results = fit_linear_regressor(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
     elif model_type == "svr":
-        regressor, scores = fit_svr(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
+        regressor, cv_results = fit_svr(X_train, y_train, hyper_param_opt, run_config, do_cross_validation)
     else:
         raise ValueError(f"{run_config['model_type']} is no valid model type in run configuration!")
 
     end_time = time.time()
     time_for_training_mins = (end_time - start_time) / 60
-    return regressor, time_for_training_mins, scores
+    return regressor, time_for_training_mins, cv_results
 
 
 def plot_prediction_interval(sample_nr, actual_value, upper_bound, lower_bound, color='#2187bb',
@@ -434,7 +443,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
         X_test[:, 0] = np.log1p(X_test[:, 0])
 
     hyper_param_opt = run_config["doHPO"] if "doHPO" in run_config else False
-    regressor, time_for_training_mins, scores = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
+    regressor, time_for_training_mins, cv_results = fit_model(X_train=X_train, y_train=y_train, hyper_param_opt=hyper_param_opt,
                                                   run_config=run_config)
 
     # tree.plot_tree(regressor.estimators_[0], feature_names=["Filesize", "Number_of_files", "Slots"], rounded=True)
@@ -462,9 +471,10 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
     mean_squared_error = metrics.mean_squared_error(y_test, y_pred)
     root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
     r2_score = metrics.r2_score(y_test, y_pred)
-    if scores:
-        mean_score = np.mean(scores["test_score"])
-        print(f"Mean cross-validation test score: {mean_score}")
+    if cv_results:
+        if "test_score" in cv_results:
+            mean_score = np.mean(cv_results["test_score"])
+            print(f"Mean cross-validation test score: {mean_score}")
     print('Mean Absolute Error:', mean_abs_error)
     print('Mean Squared Error:', mean_squared_error)
     print('Root Mean Squared Error:', root_mean_squared_error)
@@ -478,7 +488,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
         "time_for_training_mins": time_for_training_mins,
         "feature_importances": feature_importances,
         "model_params": model_params,
-        "scores": scores
+        "cv_results": cv_results
     }
 
     # With uncertainty
@@ -662,7 +672,7 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
             training_stats["percentage_above"] = percentage_above
         save_training_results(y_pred, training_stats, **train_and_test_data, **method_params)
         # TODO: watch out that this is activated
-        # save_model_to_file(regressor, train_and_test_data, run_configuration)
+        save_model_to_file(regressor, train_and_test_data, run_configuration)
 
 
 def baseline_pipeline(run_configuration, save: bool):

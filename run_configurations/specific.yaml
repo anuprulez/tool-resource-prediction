@@ -35,9 +35,10 @@
 
 train1:
   model_type: "rf"
-  dataset_path: "../experiments/Experiment 5 - Comparison to Kamalis data/data/our data/hisat2-2.2.1.txt"
+  dataset_path: "../processed_data/other_tools/bwa-0.7.17.4.txt"
   seed: 0
   do_cross_validation: False
+  doHPO: True
   model_params:
     n_estimators: 200
     random_state: 0

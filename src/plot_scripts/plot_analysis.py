@@ -56,7 +56,7 @@ def plot_file_size_memory_bytes():
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
     # data_path = "../../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
-    data_path = "../../processed_data/kamali's data/hisat2_transformed.txt"
+    data_path = "../../processed_data/kamali's data/bowtie2_transformed.txt"
     data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
