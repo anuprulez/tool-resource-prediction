@@ -345,15 +345,16 @@ def leaf_depths(tree, node_id = 0):
 def fit_random_forest(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Random Forest...")
     cv_results = {}
-    # criterion='absolute_error', bootstrap=False, warm_start=True
     regressor = RandomForestRegressor(**run_config["model_params"], verbose=1, n_jobs=-1)
     if do_hyper_param_opt:
         n_estimators = [50, 100, 200, 500]
         max_depth = [None, 4, 16, 32]
         min_samples_split = [2, 4, 8]
+        min_samples_leaf = [2, 4, 8]
         param_grid = {'n_estimators': n_estimators,
                       'max_depth': max_depth,
-                      "min_samples_split": min_samples_split}
+                      "min_samples_split": min_samples_split,
+                      "min_samples_leaf": min_samples_leaf}
         regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
         regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
@@ -372,9 +373,9 @@ def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
     regressor = xgb.XGBRegressor(**run_config["model_params"], n_jobs=multiprocessing.cpu_count() // 2)
     if do_hyper_param_opt:
         # From 0.003 to 0.3
-        lr_space = np.logspace(-3, -1, num=5) * 3
+        lr_space = np.logspace(-3, -1, num=8) * 3
         n_estimators = [50, 100, 200, 500]
-        max_depth = [0, 4, 16, 32]
+        max_depth = [2, 6, 16, 32, 64]
         param_grid = {'n_estimators': n_estimators,
                       'max_depth': max_depth,
                       'learning_rate': lr_space}
@@ -409,7 +410,7 @@ def fit_svr(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
     regressor = Pipeline(steps=[("scaler", StandardScaler()), ("model", svr)])
     if do_hyper_param_opt:
         kernel_space = ["rbf", "sigmoid", "poly"]
-        C_space = [0.1, 0.5, 1, 5]
+        C_space = [0.01, 0.1, 0.5, 1, 2, 4]
         gamma_space = ["scale", 0.001, 0.01, 0.1, 1]
         param_grid = {'model__kernel': kernel_space,
                       'model__C': C_space,
