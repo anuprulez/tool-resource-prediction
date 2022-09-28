@@ -4,6 +4,7 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 TODO:
+- add CV Results in README to training results. Output of CV (scores) or HPO (cv_results_) depending on what was used
 - implement log or power transformation (https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PowerTransformer.html#sklearn.preprocessing.PowerTransformer)
 	- log is easier reversible
 - for evaluation: every trafo on the data in training pipeline has to be done in eval as well

@@ -2,6 +2,7 @@ import pprint
 import numpy
 from matplotlib import pyplot as plt
 from onnxconverter_common import FloatTensorType
+from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.model_selection import cross_validate
@@ -233,7 +234,7 @@ def save_training_results(y_pred, training_stats, X_train, X_test, X_test_orig, 
             if "test_score" in cv_results:
                 f.write(f"Mean cross-validation test score: {mean_cv_test_score}\n")
         f.write("CV Results:\n")
-        f.write(f"{pprint.pformat(cv_results, indent=4)}\n")
+        f.write(f"{pd.DataFrame(cv_results).to_string()}\n")
         # With uncertainty
         # Only supported for RF
         if model_type == "rf" and "probability_uncertainty" in run_config:
@@ -302,7 +303,7 @@ def save_evaluation_results(y_pred, evaluation_stats, X, y, create_times, tool_n
 # Fit the regressor using cross-validation
 def fit_with_cv(regressor, X_train, y_train):
     print("Fit the regressor using 5-fold cross-validation...")
-    scores = cross_validate(regressor, X_train, y_train, verbose=2, return_train_score=True, return_estimator=True, scoring='r2')
+    scores = cross_validate(regressor, X_train, y_train, verbose=1, return_train_score=True, return_estimator=True, scoring='r2')
     best_score_idx = np.argmax(scores["test_score"])
     best_regressor = scores["estimator"][best_score_idx]
     return best_regressor, scores
@@ -319,20 +320,48 @@ def fit_with_hpo(regressor, X_train, y_train, param_grid):
     return regressor, cv_results
 
 
+#From here: https://aysent.github.io/2015/11/08/random-forest-leaf-visualization.html
+def leaf_depths(tree, node_id = 0):
+    '''
+    tree.children_left and tree.children_right store ids
+    of left and right chidren of a given node
+    '''
+    left_child = tree.children_left[node_id]
+    right_child = tree.children_right[node_id]
+
+    # If a given node is terminal, both left and right children are set to _tree.TREE_LEAF
+    if left_child == -1:
+        depths = np.array([0])  # Set depth of terminal nodes to 0
+    else:
+        # Get depths of left and right children and increment them by 1
+        left_depths = leaf_depths(tree, left_child) + 1
+        right_depths = leaf_depths(tree, right_child) + 1
+
+        depths = np.append(left_depths, right_depths)
+
+    return depths
+
+
 def fit_random_forest(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Random Forest...")
     cv_results = {}
     # criterion='absolute_error', bootstrap=False, warm_start=True
-    regressor = RandomForestRegressor(**run_config["model_params"], verbose=2)
+    regressor = RandomForestRegressor(**run_config["model_params"], verbose=1, n_jobs=-1)
     if do_hyper_param_opt:
-        # param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400],
-        #                'criterion': ['absolute_error', 'poisson', 'squared_error']}
-        param_grid = {'max_depth': np.arange(1, 3), 'n_estimators': [50, 100, 200, 400]}
+        n_estimators = [50, 100, 200, 500]
+        max_depth = [None, 4, 16, 32]
+        min_samples_split = [2, 4, 8]
+        param_grid = {'n_estimators': n_estimators,
+                      'max_depth': max_depth,
+                      "min_samples_split": min_samples_split}
         regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
         regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
     else:
         regressor.fit(X_train, y_train)
+    # allDepths = [leaf_depths(estimator.tree_) for estimator in regressor.estimators_]
+    # print("Min tree depth:", np.hstack(allDepths).min())
+    # print("Max tree depth:", np.hstack(allDepths).max())
     return regressor, cv_results
 
 
@@ -340,14 +369,15 @@ def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
     print("Fit XGB model...")
     xgb.set_config(verbosity=2)
     cv_results = {}
-
-    # TODO: maybe try XGB RF Regressor
-    # xgb.XGBRFRegressor
     regressor = xgb.XGBRegressor(**run_config["model_params"], n_jobs=multiprocessing.cpu_count() // 2)
     if do_hyper_param_opt:
-        # From 0.03 to 0.3
-        lr_space = np.logspace(-2, -1, num=10) * 3
-        param_grid = {'max_depth': np.arange(1, 9), 'n_estimators': [50, 100, 200, 400], 'learning_rate': lr_space}
+        # From 0.003 to 0.3
+        lr_space = np.logspace(-3, -1, num=5) * 3
+        n_estimators = [50, 100, 200, 500]
+        max_depth = [0, 4, 16, 32]
+        param_grid = {'n_estimators': n_estimators,
+                      'max_depth': max_depth,
+                      'learning_rate': lr_space}
         regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
         regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
@@ -359,9 +389,10 @@ def fit_xgb(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
 def fit_linear_regressor(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validation):
     print("Fit Linear Regressor...")
     cv_results = {}
-    regressor = LinearRegression(copy_X=True, **run_config["model_params"])
+    lr = LinearRegression(copy_X=True, **run_config["model_params"])
+    regressor = Pipeline(steps=[("scaler", StandardScaler()), ("model", lr)])
     if do_hyper_param_opt:
-        param_grid = {}
+        param_grid = {"normalize": [False, True]}
         regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
         regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
@@ -374,11 +405,15 @@ def fit_svr(X_train, y_train, do_hyper_param_opt, run_config, do_cross_validatio
     print("Fit Support Vector Regressor...")
     cv_results = {}
 
-    regressor = SVR(cache_size=1000, verbose=True, **run_config["model_params"])
+    svr = SVR(**run_config["model_params"])
+    regressor = Pipeline(steps=[("scaler", StandardScaler()), ("model", svr)])
     if do_hyper_param_opt:
-        # From 0.00001 to 0.1
-        epsilon_space = np.logspace(-5, -1, num=15)
-        param_grid = {'epsilon': epsilon_space}
+        kernel_space = ["rbf", "sigmoid", "poly"]
+        C_space = [0.1, 0.5, 1, 5]
+        gamma_space = ["scale", 0.001, 0.01, 0.1, 1]
+        param_grid = {'model__kernel': kernel_space,
+                      'model__C': C_space,
+                      'model__gamma': gamma_space}
         regressor, cv_results = fit_with_hpo(regressor, X_train, y_train, param_grid)
     elif do_cross_validation:
         regressor, cv_results = fit_with_cv(regressor, X_train, y_train)
@@ -576,7 +611,8 @@ def save_model_as_joblib(regressor, train_and_test_data, run_config):
 
 
 def save_model_to_file(regressor, train_and_test_data, run_configuration):
-    save_model_as_onnx(regressor, train_and_test_data, run_configuration)
+    # TODO: activate this
+    # save_model_as_onnx(regressor, train_and_test_data, run_configuration)
     save_model_as_joblib(regressor, train_and_test_data, run_configuration)
 
 

@@ -1,91 +1,64 @@
-#train1:
-#  model_type: "svr"
-##  dataset_path: "saved_data/testset_trinity-2.9.1_2022_09_12-12_24_25_PM.txt"
-#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-##  dataset_path: "../processed_data/example_data/hisat2_transformed.txt"
-##  dataset_path: "../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
-#  seed: 0
-##  probability_uncertainty: 0.9
-#  do_cross_validation: True
-##  doLogTrafo: True
-#  model_params:
-#    n_estimators: 200
-#    random_state: 0
-##    max_depth: 2
-##    min_samples_leaf: 1
-
-#train2:
-#  model_type: "lr"
-#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-#  seed: 0
-#  do_cross_validation: True
-#  model_params:
-#    {}
-
-#train3:
-#  model_type: "svr"
-#  dataset_path: "../processed_data/most_memory_tools/tools_with_trinity/trinity/2.9.1.txt"
-#  seed: 0
-#  do_cross_validation: False
-#  doStandardScale: False
-#  doHPO: False
-#  doLogTrafo: True
-#  model_params:
-#    {}
-
 ##lofreq_indelqual/2.1.4
 train1:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/lofreq_indelqual-2.1.4.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##bamleftalign/1.3.1
 train2:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/bamleftalign-1.3.1.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##vcf2tsv/1.0.0_rc3
 train3:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/vcf2tsv-1.0.0_rc3.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##rna_star/2.7.2b
 train4:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/rna_star-2.7.2b.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##rna_star/2.7.5b
 train5:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/rna_star-2.7.5b.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##kraken2/2.1.1
 train6:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/kraken2-2.1.1.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##fasta2tab/1.1.1
 train7:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
 ##gmx_sim/2020.4
 train8:
-  model_type: "rf"
+  model_type: "svr"
   dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/gmx_sim-2020.4.txt"
   seed: 0
+  doHPO: True
   model_params:
-    n_estimators: 200
+    {}
