@@ -1,0 +1,21 @@
+#Random Forest
+eval1:
+  model_type: "rf"
+  # Use test set
+  dataset_path: "../experiments/Experiment 7 - Accuracy - Failure trade-off/data/testset_rna_star-2.7.5b_2022_09_29-01_10_38_AM.txt"
+  seed: 0
+  do_cross_validation: True
+  probability_uncertainty: 0.99
+  model_params:
+    {}
+
+###kraken2/2.1.1
+#eval2:
+#  model_type: "rf"
+#  # Use test set
+#  dataset_path: "../experiments/Experiment 7 - Accuracy - Failure trade-off/data/testset_kraken2-2.1.1+galaxy1_2022_09_29-01_15_35_AM.txt"
+#  seed: 0
+#  do_cross_validation: True
+#  probability_uncertainty: 0.99
+#  model_params:
+#    {}

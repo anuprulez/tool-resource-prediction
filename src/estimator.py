@@ -535,6 +535,7 @@ def train_and_predict(X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_
             print("Predict with uncertainty...")
             err_up, err_down = pred_with_uncertainty(regressor, X_test, probability_uncertainty)
             y_pred_with_uncertainty = err_up
+            y_pred = y_pred_with_uncertainty
 
             # truth = y_test.copy()
             # correct = 0.
@@ -626,10 +627,26 @@ def load_model_and_predict(run_config, model_path, X, y, tool_name):
         label_name = sess.get_outputs()[0].name
         print("Predict...")
         y_pred = sess.run([label_name], {input_name: X.astype(numpy.float32)})[0].flatten()
+        mean_abs_error = metrics.mean_absolute_error(y, y_pred)
+        mean_squared_error = metrics.mean_squared_error(y, y_pred)
+        root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y, y_pred))
+        r2_score = metrics.r2_score(y, y_pred)
+        print('Mean Absolute Error:', mean_abs_error)
+        print('Mean Squared Error:', mean_squared_error)
+        print('Root Mean Squared Error:', root_mean_squared_error)
+        print('R2 Score:', r2_score)
     elif model_path.endswith(".joblib"):
         from joblib import load
         model = load(model_path)
         y_pred = model.predict(X)
+        mean_abs_error = metrics.mean_absolute_error(y, y_pred)
+        mean_squared_error = metrics.mean_squared_error(y, y_pred)
+        root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y, y_pred))
+        r2_score = metrics.r2_score(y, y_pred)
+        print('Mean Absolute Error:', mean_abs_error)
+        print('Mean Squared Error:', mean_squared_error)
+        print('Root Mean Squared Error:', root_mean_squared_error)
+        print('R2 Score:', r2_score)
         # With uncertainty
         # only supported for RF
         if run_config["model_type"] == "rf" and "probability_uncertainty" in run_config:
@@ -638,6 +655,7 @@ def load_model_and_predict(run_config, model_path, X, y, tool_name):
                 print("Predict with uncertainty...")
                 err_up, err_down = pred_with_uncertainty(model, X, probability_uncertainty)
                 y_pred_with_uncertainty = err_up
+                y_pred = y_pred_with_uncertainty
 
                 mean_abs_error_with_uncertainty = metrics.mean_absolute_error(y, y_pred_with_uncertainty)
                 mean_squared_error_with_uncertainty = metrics.mean_squared_error(y, y_pred_with_uncertainty)
@@ -655,15 +673,6 @@ def load_model_and_predict(run_config, model_path, X, y, tool_name):
                     "root_mean_squared_error_with_uncertainty": root_mean_squared_error_with_uncertainty,
                     "r2_score_with_uncertainty": r2_score_with_uncertainty
                 }
-
-    mean_abs_error = metrics.mean_absolute_error(y, y_pred)
-    mean_squared_error = metrics.mean_squared_error(y, y_pred)
-    root_mean_squared_error = np.sqrt(metrics.mean_squared_error(y, y_pred))
-    r2_score = metrics.r2_score(y, y_pred)
-    print('Mean Absolute Error:', mean_abs_error)
-    print('Mean Squared Error:', mean_squared_error)
-    print('Root Mean Squared Error:', root_mean_squared_error)
-    print('R2 Score:', r2_score)
 
     evaluation_stats = {
         "mean_abs_error": mean_abs_error,

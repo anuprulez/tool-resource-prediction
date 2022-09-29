@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import re
 
 def plot_memory_bytes_over_time():
     create_time = "Create_time"
@@ -56,7 +57,8 @@ def plot_file_size_memory_bytes():
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/ivar_removereads-1.2.2/Ready/ivar_removereads-1.2.2-only-valid.txt"
     # data_path = "../../experiments/Experiment 1 - Removing faulty data/data/cutadapt-1.16.5/Ready/cutadapt-1.16.5-only-valid.txt"
     # data_path = "../../processed_data/sampled_data/bowtie2-2.3.4.3_5000_samples_seed_0.txt"
-    data_path = "../../processed_data/kamali's data/bowtie2_transformed.txt"
+    # data_path = "../../processed_data/kamali's data/bowtie2_transformed.txt"
+    data_path = "../../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
     data = pd.read_csv(data_path, sep=",", names=column_names)
     # Scale memory bytes by GB
     data[filesize] = (data[filesize].values / 1000000000).astype('float64')
@@ -69,7 +71,17 @@ def plot_file_size_memory_bytes():
     # scatter_plt = sns.histplot(data=data, x=filesize)
     scatter_plt.set_xlabel(filesize + " in GB")
     scatter_plt.set_ylabel("Memory bytes in GB")
-    scatter_plt.set(title=data["Tool_id"].iloc[0])
+
+    # Extract tool name
+    tool_name = data["Tool_id"].iloc[0]
+    start_idx = 0
+    idx = tool_name.rfind('/')
+    if idx != -1:
+        start_idx = tool_name[0:idx].rfind('/') + 1
+    tool_name = tool_name[start_idx:]
+    # Remove +...galaxy0 or +...galaxy 1 from name
+    tool_name = re.sub(r"\+.*galaxy\d", "", tool_name)
+    scatter_plt.set(title=tool_name)
     plt.show()
 
 
