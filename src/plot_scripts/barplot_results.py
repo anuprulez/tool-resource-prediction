@@ -8,22 +8,39 @@ from matplotlib import pyplot as plt
 # # df_num_entries = pd.concat([df_num_entries, df_entry], ignore_index=True)
 results_rf = [0.96, 0.76]
 
-X = ["bowtie2", "hisat2"]
-rf_scores = [0.90, 0.75]
-xgb_scores = [0.88, 0.72]
-lr_scores = [0.38, 0.42]
-svr_scores = [0.87, 0.55]
+# X = ["lofreq_indelqual/2.1.4", "bamleftalign/1.3.1", "vcf2tsv/1.0.0_rc3", "rna_star/2.7.2b", "rna_star/2.7.5b",
+#      "kraken2/2.1.1", "fasta2tab/1.1.1", "gmx_sim/2020.4"]
+X = ["lofreq_indelqual/2.1.4", "bamleftalign/1.3.1", "vcf2tsv/1.0.0_rc3", "rna_star/2.7.2b"]
+
+# rf_scores = [0.96, 0.76, 0.09, -0.18, -0.33, -0.09, 0.69, -0.01]
+# rf_scores_hpo = [0.98, 0.79, 0.15, 0.04, 0.09, 0.18, 0.80, 0.10]
+# xgb_scores = [0.99, 0.72, -0.12, -0.22, -0.35, -0.02, 0.72, 0.01]
+# xgb_scores_hpo = [0.96, 0.78, 0.07, 0.04, 0.09, 0.17, 0.80, 0.07]
+
+rf_scores = [0.96, 0.76, 0.09, -0.18]
+rf_scores_hpo = [0.98, 0.79, 0.15, 0.04]
+xgb_scores = [0.99, 0.72, -0.12, -0.22]
+xgb_scores_hpo = [0.96, 0.78, 0.07, 0.04]
+lr_scores = []
+lr_scores_hpo = []
+svr_scores = []
+svr_scores_hpo = []
+
+hpo_scores = np.concatenate([rf_scores_hpo, xgb_scores_hpo])
 
 X_axis = np.arange(len(X), 0, -1) * 3
 
 sns.set_style("darkgrid")
 sns.set_palette(sns.color_palette("Set2"))
 
+axis_hpo = np.concatenate([X_axis + 1.2, X_axis + 0.7])
+
 # Horizontal
+plt.barh(axis_hpo, hpo_scores, 0.4, label='with HPO')
 plt.barh(X_axis + 1.2, rf_scores, 0.4, label='Random Forest')
-plt.barh(X_axis + 0.7, xgb_scores, 0.4, label='XGB')
-plt.barh(X_axis + 0.2, lr_scores, 0.4, label='Linear Regression')
-plt.barh(X_axis - 0.3, svr_scores, 0.4, label='SVR')
+plt.barh(X_axis + 0.7, xgb_scores, 0.4, label="XGB")
+# plt.barh(X_axis + 0.2, lr_scores, 0.4, label='Linear Regression')
+# plt.barh(X_axis - 0.3, svr_scores, 0.4, label='SVR')
 plt.yticks(X_axis, X)
 plt.ylabel("Tools")
 plt.xlabel("R2 Score")
@@ -37,6 +54,6 @@ plt.xlabel("R2 Score")
 # plt.xlabel("Tools")
 # plt.ylabel("R2 Score")
 
-plt.title("Results for Kamali's data")
+plt.title("R2 Score with and without HPO")
 plt.legend()
 plt.show()

@@ -1,0 +1,280 @@
+#Random Forest
+##lofreq_indelqual/2.1.4
+train1:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##bamleftalign/1.3.1
+train2:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##vcf2tsv/1.0.0_rc3
+train3:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##rna_star/2.7.2b
+train4:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##rna_star/2.7.5b
+train5:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/rna_star-2.7.5b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##kraken2/2.1.1
+train6:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/kraken2-2.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##fasta2tab/1.1.1
+train7:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##gmx_sim/2020.4
+train8:
+  model_type: "rf"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/gmx_sim-2020.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+
+#XGB
+##lofreq_indelqual/2.1.4
+train9:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##bamleftalign/1.3.1
+train10:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##vcf2tsv/1.0.0_rc3
+train11:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##rna_star/2.7.2b
+train12:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##rna_star/2.7.5b
+train13:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/rna_star-2.7.5b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##kraken2/2.1.1
+train14:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/kraken2-2.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##fasta2tab/1.1.1
+train15:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+##gmx_sim/2020.4
+train16:
+  model_type: "xgb"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/gmx_sim-2020.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    random_state: 0
+    n_estimators: 200
+
+
+#Linear Regression
+##lofreq_indelqual/2.1.4
+train17:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bamleftalign/1.3.1
+train18:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##vcf2tsv/1.0.0_rc3
+train19:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.2b
+train20:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.5b
+train21:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/rna_star-2.7.5b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##kraken2/2.1.1
+train22:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/kraken2-2.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##fasta2tab/1.1.1
+train23:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##gmx_sim/2020.4
+train24:
+  model_type: "lr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/gmx_sim-2020.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+
+#SVR
+##lofreq_indelqual/2.1.4
+train25:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/lofreq_indelqual-2.1.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##bamleftalign/1.3.1
+train26:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high correlation/bamleftalign-1.3.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##vcf2tsv/1.0.0_rc3
+train27:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/vcf2tsv-1.0.0_rc3.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.2b
+train28:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low correlation/rna_star-2.7.2b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##rna_star/2.7.5b
+train29:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/rna_star-2.7.5b.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##kraken2/2.1.1
+train30:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/high memory/kraken2-2.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##fasta2tab/1.1.1
+train31:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/fasta2tab-1.1.1.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
+##gmx_sim/2020.4
+train32:
+  model_type: "svr"
+  dataset_path: "../experiments/Experiment 6 - HPO & Comparison to Galaxy/data/low memory/gmx_sim-2020.4.txt"
+  seed: 0
+  do_cross_validation: True
+  model_params:
+    {}
