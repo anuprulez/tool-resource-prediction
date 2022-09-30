@@ -4,67 +4,12 @@ Question:
 - mention in report: could we do experiments to initialize jobs with our predicted memory and see what the success rate is?
 
 TODO:
-- do grammar check
-- add CV Results in README to training results. Output of CV (scores) or HPO (cv_results_) depending on what was used
-- implement log or power transformation (https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PowerTransformer.html#sklearn.preprocessing.PowerTransformer)
-	- log is easier reversible
-- for evaluation: every trafo on the data in training pipeline has to be done in eval as well
-- report:
-	- the different models
-	- write each benefits and disadvantages of the different models
-	- standard scaling
-	- CV
-	- log(p+1) transformation (cite paper that uses log(1+p))
-		- removes skewness of data distribution. Original data follows some kind of exponential distribution or a skewed distribution
-		- include plots of data distributions
-- report: num_samples per tool differ very much
-- removing outliers: cut data +- 2 * std or only data over + 2*std?
-- include comparison to Kamalis data and cite
-	- try hisat2 data and include it in report as well as bowtie2
-- if you add other models for comparison, add them to Methods --> Random Forest and XGBoost implementation
-- write into report similar things as here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6931352/
-- put source code into report?
+- add link to valid data in README
 - put in README how CSViewer can be used
 - add link to report in README
-- search for TODOs and remove them when finished
-- first chapter: motivation
 - why not use neural networks? Not many features and there are tools with low number of samples. Our data is not complicated. would be overkill
 	--> something for the future?
-- use also tools that are not used as much --> maybe at least 1000-2000
-- integrate every tool in one model such that one model can predict for multiple tools (e.g. 5-10 tools)
-	- analysis is one model better for multiple tools or is a single model better?
-	- this can be put as something can be done later on in the report
-- show data in report: if we have good correlation -> our model works well
-					- show cases where correlation is not so good --> model is not so good
 - prediction intervals only work if tree is big enough --> how big?
-- Hyperparameter Optimization with scikit-learn
-	- Grid search
-	- Random search
-	- both with successive halving
-- write in section further work in report: more features are needed for better prediction. At the moment only 2 relevant features
-
-- maybe try to include the category of the tool for the prediction?
-- try to get features for the different tools: like number params
-- try other models:
-	- simple models Linear Regressor or SVR
-	- Ensemble based or tree based methods
-	- e.g. Gradient boosting
-	- see on the bottom
-- create benchmarks: one low capacity model fitted on data, one high capacity model fitted on data, one model that assigns random values
-
-
-DONE:
-- Create a baseline: use assigned memory from the tool-configuration file
-- what is the error for faulty_data compared to valid_data
-- ONLY USE SAME VERSION FOR TOOLS!
-	- make distinction between versions
-- include create_time
-- Some entries in the data have filesize 0 but number of files more than 0: --> leave them out
-- leave out "Runtime"
-- Processed whole dataset again, but got error during it. Probably memory problems. Total number entries now: 19139913
-- Filter all entries that have invalid data this includes:
-	- data with memory bytes over 1 TB
-	- data with memory bytes over 8 * assigned memory
 
 Infos:
 - write report 20-30 pages
@@ -99,10 +44,3 @@ papers:
 https://ris.uni-paderborn.de/download/16219/16220/ris_preprint.pdf
 https://link.springer.com/content/pdf/10.1007/s10723-021-09561-3.pdf
 https://upcommons.upc.edu/bitstream/handle/2117/106670/128908.pdf
-				
-
-Possible methods:
-	- Decision Trees
-	- Ensemble Learning (use different models and average them)
-		- e.g Random forests or Gradient boosting (better than Random forests according to wikipedia)
-	- Neural networks

@@ -184,7 +184,6 @@ def get_train_and_test_set(do_scaling: bool, seed: int, run_config=None, remove_
             "create_times_train": create_times_train,
             "create_times_test": create_times_test
         }
-        # TODO: watch out that this is activated
         save_train_and_test_data(**train_and_test_data_to_save)
 
     return X_train, X_test, X_test_orig, X_test_unscaled, y_train, y_test, tool_name, create_times_test, percentage_above
@@ -613,8 +612,7 @@ def save_model_as_joblib(regressor, train_and_test_data, run_config):
 
 
 def save_model_to_file(regressor, train_and_test_data, run_configuration):
-    # TODO: activate this
-    # save_model_as_onnx(regressor, train_and_test_data, run_configuration)
+    save_model_as_onnx(regressor, train_and_test_data, run_configuration)
     save_model_as_joblib(regressor, train_and_test_data, run_configuration)
 
 
@@ -717,7 +715,6 @@ def training_pipeline(run_configuration, save: bool, remove_outliers: bool):
         if remove_outliers:
             training_stats["percentage_above"] = percentage_above
         save_training_results(y_pred, training_stats, **train_and_test_data, **method_params)
-        # TODO: watch out that this is activated
         save_model_to_file(regressor, train_and_test_data, run_configuration)
 
 
