@@ -2,6 +2,10 @@
 
 The original dataset taken from Galaxy can be found here: https://usegalaxy.eu/u/kumara/h/tool-resources
 
+## Report
+
+The report for this project can be found [here](report/Project_report_tool_resource_prediction_Oener_Aydogan_final.pdf).
+
 ## Requirements
 Python 3.9 was used.
 Install the necessary packages by using the [requirements file](requirements.txt).
